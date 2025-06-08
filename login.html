@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelo - Login</title>
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="top-banner">
+      <a href="index.html"><img src="/img/logo.png" alt="Logo Freelo" class="logo-img" /></a>
+    </div>
+    <div class="container">
+      <div class="header-login">Iniciar Sesión</div>
+      <form id="loginForm">
+        <input
+          type="email"
+          id="email"
+          placeholder="Correo electrónico"
+          required
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Contraseña"
+          required
+        />
+        <button type="submit">Continuar</button>
+        <p>¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+      </form>
+      <p id="estado"></p>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.firebasestorage.app",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          auth
+            .signInWithEmailAndPassword(email, password)
+            .then((userCred) => {
+              document.getElementById("estado").textContent =
+                "Login exitoso ✅";
+              window.location.href = "proyectosP.html";
+            })
+            .catch((error) => {
+              document.getElementById("estado").textContent =
+                "Usuario o contraseña incorrectos ❌";
+            });
+        });
+    </script>
+  </body>
+</html>

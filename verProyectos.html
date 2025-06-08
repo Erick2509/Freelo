@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis Proyectos</title>
+    <link rel="stylesheet" href="/css/verProyecto.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="logo"><a href="index.html"><img src="img/logo.png" alt=""></a></div>
+      <div class="perfil-container">
+        <span id="nombreUsuario"></span>
+        <div id="perfilUsuario" style="position: relative; cursor: pointer">
+          <i class="fa-solid fa-user"></i>
+          <div
+            id="menuUsuario"
+            style="
+              display: none;
+              position: absolute;
+              right: 0;
+              top: 30px;
+              background: white;
+              border: 1px solid #ccc;
+              padding: 10px;
+            "
+          >
+            <button onclick="cerrarSesion()">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu">
+      <div><a href="proyectosP.html">Nuevo</a></div>
+      <div><a href="verProyectos.html">Mis Proyectos</a></div>
+    </div>
+
+    <div class="container">
+      <h1>Mis Proyectos</h1>
+      <div id="proyectosContainer"></div>
+    </div>
+    <p id="cargando">Cargando tus proyectos...</p>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.firebasestorage.app",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        db.collection("usuarios")
+          .doc(user.uid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              document.getElementById("nombreUsuario").textContent =
+                doc.data().nombre;
+            }
+          });
+
+        const perfil = document.getElementById("perfilUsuario");
+        const menu = document.getElementById("menuUsuario");
+        perfil.addEventListener("click", () => {
+          menu.style.display = menu.style.display === "none" ? "block" : "none";
+        });
+        document.addEventListener("click", function (event) {
+          if (!perfil.contains(event.target)) {
+            menu.style.display = "none";
+          }
+        });
+
+        db.collection("proyectos")
+          .where("uid", "==", user.uid)
+          .get()
+          .then((querySnapshot) => {
+            const container = document.getElementById("proyectosContainer");
+            document.getElementById("cargando").style.display = "none";
+
+            if (querySnapshot.empty) {
+              container.innerHTML = "<p>No tienes proyectos aún.</p>";
+              return;
+            }
+
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              const card = document.createElement("div");
+              card.classList.add("proyecto");
+
+              card.innerHTML = `
+              <div class="containerGen"
+              <h3>${data.tarea}</h3>
+              <p><strong>Categoría:</strong> ${data.categoria}</p>
+              <p><strong>Precio:</strong> S/ ${data.precio}</p>
+              <p><strong>Tiempo:</strong> ${data.tiempo} h</p>
+              <p><strong>Tarifa:</strong> ${data.tarifa}</p>
+              <p><strong>Entregables:</strong> ${data.entregables}</p>
+              <p><strong>Revisiones:</strong> ${data.revisiones}</p>
+<button onclick="location.href='editarProyecto.html?id=${doc.id}'">Editar</button>
+
+              <button onclick="eliminarProyecto('${doc.id}')">Eliminar</button>
+             
+                </div>
+            `;
+              container.appendChild(card);
+            });
+          });
+      });
+
+      function cerrarSesion() {
+        firebase
+          .auth()
+          .signOut()
+          .then(() => {
+            window.location.href = "login.html";
+          });
+      }
+
+
+        function eliminarProyecto(id) {
+            const modal = document.getElementById("modalConfirm");
+            modal.style.display = "block";
+    
+            document.getElementById("btnCancelar").onclick = function () {
+            modal.style.display = "none";
+            };
+    
+            document.getElementById("btnConfirmar").onclick = function () {
+            db.collection("proyectos")
+                .doc(id)
+                .delete()
+                .then(() => {
+                modal.style.display = "none";
+                window.location.reload();
+                })
+                .catch((error) => {
+                console.error("Error al eliminar el proyecto: ", error);
+                });
+            };
+        }
+      
+      function redirigirEditar(id) {
+        localStorage.setItem("proyectoId", id);
+        window.location.href = "editarProyecto.html";
+      }
+    </script>
+    <div id="modalConfirm" class="modal">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este proyecto?</p>
+        <div class="modal-buttons">
+          <button id="btnCancelar">Cancelar</button>
+          <button id="btnConfirmar">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

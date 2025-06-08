@@ -1,0 +1,201 @@
+/* Fondo diagonal morado-negro */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #6A0DAD, #000000);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Navegación superior */
+.nav {
+    width: 100%;
+    padding: 1rem 2rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+}
+
+.nav .logo a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.5rem;
+}
+
+.perfil-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+}
+
+.menu {
+    display: flex;
+    gap: 2rem;
+    margin: 1rem 0;
+
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+/* Contenedor general */
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.container h1 {
+    margin: 10px 0;
+}
+
+/* Tarjetas de proyecto */
+.proyecto {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #f9f9f9;
+}
+
+.proyecto h3 {
+    margin-top: 0;
+    color: #6A0DAD;
+}
+
+.proyecto p {
+    margin: 0.3rem 0;
+}
+
+/* Botones */
+.proyecto button {
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #6A0DAD;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.proyecto button:hover {
+    background: #5800a8;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 1.2rem;
+    }
+
+    .menu {
+        align-items: center;
+        margin-top: 2rem;
+    }
+
+    .menu a {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+#menuUsuario {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#menuUsuario button {
+    background-color: #6A0DAD;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+#menuUsuario button:hover {
+    background-color: #5800a8;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    margin: 15% auto;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#btnCancelar {
+    background-color: #ccc;
+}
+
+#btnConfirmar {
+    background-color: #e53935;
+    color: white;
+}
+.logo img{
+    width: 100px;
+    height: 50px;
+    object-fit: cover;
+  }

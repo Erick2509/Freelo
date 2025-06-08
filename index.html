@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelo - Proyectos</title>
+    <link rel="stylesheet" href="/css/proyecto.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="logo"><a href="index.html"><img src="img/logo.png" alt=""></a></div>
+      <div class="perfil-container">
+        <span id="nombreUsuario" style="font-weight: bold"></span>
+        <div id="perfilUsuario">
+          <i class="fa-solid fa-user"></i>
+          <div id="menuUsuario">
+            <button onclick="irAMisProyectos()">🗂️ Mis proyectos</button>
+            <button onclick="cerrarSesion()">🔓 Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="containerGeneral">
+      <main class="container">
+        <h1>Proyectos Disponibles</h1>
+        <div id="listaProyectos" style="margin-top: 2rem"></div>
+      </main>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.firebasestorage.app",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      const perfil = document.getElementById("perfilUsuario");
+      const menu = document.getElementById("menuUsuario");
+      const spanNombre = document.getElementById("nombreUsuario");
+
+      function obtenerNombreUsuario(uid) {
+        return db
+          .collection("usuarios")
+          .doc(uid)
+          .get()
+          .then((doc) => {
+            return doc.exists ? doc.data().nombre : "Anónimo";
+          });
+      }
+
+      function cargarProyectos() {
+        db.collection("proyectos")
+          .orderBy("creado", "desc")
+          .get()
+          .then(async (snapshot) => {
+            const contenedor = document.getElementById("listaProyectos");
+            contenedor.innerHTML = "";
+
+            if (snapshot.empty) {
+              contenedor.innerHTML = "<p>No hay proyectos disponibles.</p>";
+              return;
+            }
+
+            for (const doc of snapshot.docs) {
+              const p = doc.data();
+              const nombreCreador = await obtenerNombreUsuario(p.uid);
+
+              contenedor.innerHTML += `
+              <div class="card-proyecto">
+                <div class="img-proyecto"><span class="icono">📁</span></div>
+                <div class="contenido-proyecto">
+                  <h3>${p.tarea}</h3>
+                  <p><strong>Creado por:</strong> ${nombreCreador}</p>
+                  <p><strong>Categoría:</strong> ${p.categoria}</p>
+                  <p><strong>Precio:</strong> S/ ${p.precio}</p>
+                  <p><strong>Tiempo estimado:</strong> ${p.tiempo} h</p>
+                  <p><strong>Tarifa/hora:</strong> ${p.tarifa}</p>
+                  <p><strong>Entregables:</strong> ${p.entregables}</p>
+                  <p><strong>Revisiones:</strong> ${p.revisiones}</p>
+                </div>
+              </div>
+            `;
+            }
+          })
+          .catch((error) => {
+            document.getElementById(
+              "listaProyectos"
+            ).innerHTML = `<p>Error al cargar proyectos: ${error.message}</p>`;
+          });
+      }
+
+      // Cargar siempre los proyectos al inicio
+      cargarProyectos();
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          db.collection("usuarios")
+            .doc(user.uid)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                spanNombre.textContent = doc.data().nombre;
+              }
+            });
+
+          perfil.addEventListener("click", () => {
+            menu.style.display =
+              menu.style.display === "none" ? "block" : "none";
+          });
+
+          document.addEventListener("click", (e) => {
+            if (!perfil.contains(e.target)) {
+              menu.style.display = "none";
+            }
+          });
+        } else {
+          perfil.onclick = () => (window.location.href = "login.html");
+        }
+      });
+
+      function cerrarSesion() {
+        auth.signOut().then(() => {
+          window.location.href = "login.html";
+        });
+      }
+
+      function irAMisProyectos() {
+        window.location.href = "verProyectos.html";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Proyecto</title>
+    <link rel="stylesheet" href="/css/proyectoP.css" />
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="logo"><a href="index.html"><img src="img/logo.png" alt=""></a></div>
+      <div class="perfil-container">
+        <span id="nombreUsuario"></span>
+
+        <div
+          class="perfil"
+          id="perfilUsuario"
+          style="position: relative; cursor: pointer"
+        >
+          <i class="fa-solid fa-user"></i>
+          <div
+            id="menuUsuario"
+            style="
+              display: none;
+              position: absolute;
+              right: 0;
+              top: 30px;
+              background: white;
+              border: 1px solid #ccc;
+              padding: 10px;
+            "
+          >
+            <button onclick="cerrarSesion()">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="menu">
+        <div>
+            <a href="proyectosP.html">Nuevo</a>
+        </div>
+        <div>
+            <a href="verProyectos.html">Mis Proyectos</a>
+        </div>
+    </div>
+    <div class="container">
+      <h1>Agregar Proyecto</h1>
+
+      <form id="formProyecto">
+        <label>Categoría:</label>
+        <select id="categoria" required>
+          <option value="">Selecciona una categoría</option>
+        </select>
+
+        <label>Tarea:</label>
+        <select id="tarea" required>
+          <option value="">Selecciona una tarea</option>
+        </select>
+
+        <label>Precio (PEN):</label>
+        <input type="number" id="precio" required />
+
+        <label>Tiempo estimado (h):</label>
+        <input type="number" step="0.1" id="tiempo" required />
+
+        <label>Tarifa por hora:</label>
+        <input type="text" id="tarifa" readonly />
+
+        <label>Entregables:</label>
+        <select id="entregables" required>
+          <option value="">Selecciona un entregable</option>
+        </select>
+
+        <label>Revisiones:</label>
+        <input type="number" id="revisiones" required />
+
+        <button type="submit">Guardar Proyecto</button>
+      </form>
+
+      <p id="mensaje" style="margin-top: 1rem"></p>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.firebasestorage.app",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      const tareas = {
+        "DISEÑO GRÁFICO": {
+          "Logo básico": {
+            precio: 194,
+            tiempo: 3,
+            tarifa: 65.1,
+            entregables: "PNG, JPG",
+            revisiones: 1,
+          },
+          "Logo profesional": {
+            precio: 578,
+            tiempo: 10,
+            tarifa: 57.75,
+            entregables: "PNG, vector, manual de marca",
+            revisiones: 2,
+          },
+          "Pack redes sociales (5 posts)": {
+            precio: 389,
+            tiempo: 6,
+            tarifa: 64.05,
+            entregables: "JPG, editable Canva/PSD",
+            revisiones: 1,
+          },
+          "Banner publicitario": {
+            precio: 158,
+            tiempo: 2.5,
+            tarifa: 63.0,
+            entregables: "JPG, PNG",
+            revisiones: 1,
+          },
+        },
+        TRADUCCIÓN: {
+          "General (500 palabras)": {
+            precio: 131,
+            tiempo: 2.5,
+            tarifa: 52.5,
+            entregables: ".docx, PDF",
+            revisiones: 1,
+          },
+          "Técnico / legal": {
+            precio: 347,
+            tiempo: 6,
+            tarifa: 57.75,
+            entregables: ".docx, PDF",
+            revisiones: 2,
+          },
+        },
+        "REDACCIÓN / COPYWRITING": {
+          "Artículo 500 palabras": {
+            precio: 116,
+            tiempo: 3,
+            tarifa: 37.8,
+            entregables: ".docx, PDF",
+            revisiones: 1,
+          },
+          "Artículo SEO (800+ palabras)": {
+            precio: 273,
+            tiempo: 6,
+            tarifa: 45.15,
+            entregables: ".docx, PDF, metadatos",
+            revisiones: 2,
+          },
+          "Copy publicitario": {
+            precio: 53,
+            tiempo: 1,
+            tarifa: 52.5,
+            entregables: "Texto corto",
+            revisiones: 1,
+          },
+        },
+        "DESARROLLO WEB": {
+          "Landing page estática": {
+            precio: 583,
+            tiempo: 10,
+            tarifa: 57.75,
+            entregables: "HTML/CSS, assets",
+            revisiones: 1,
+          },
+          "Web con formulario": {
+            precio: 893,
+            tiempo: 15,
+            tarifa: 59.85,
+            entregables: "HTML/CSS/JS, backend",
+            revisiones: 2,
+          },
+          "Web WordPress (5 secciones)": {
+            precio: 2625,
+            tiempo: 50,
+            tarifa: 52.5,
+            entregables: "Hosting, plugins",
+            revisiones: 2,
+          },
+        },
+        "APP MÓVIL": {
+          "App básica informativa": {
+            precio: 1943,
+            tiempo: 45,
+            tarifa: 43.05,
+            entregables: "APK, código fuente",
+            revisiones: 1,
+          },
+          "App con login + BD": {
+            precio: 4725,
+            tiempo: 100,
+            tarifa: 47.25,
+            entregables: "APK, backend",
+            revisiones: 2,
+          },
+          "App completa (chat + pagos)": {
+            precio: 11655,
+            tiempo: 250,
+            tarifa: 46.2,
+            entregables: "Full release",
+            revisiones: 3,
+          },
+        },
+        "COMMUNITY MANAGER": {
+          "Básico (12 posts)": {
+            precio: 777,
+            tiempo: 30,
+            tarifa: 26.25,
+            entregables: "Posts, calendario",
+            revisiones: 1,
+          },
+          "Intermedio (20 + DM)": {
+            precio: 1155,
+            tiempo: 40,
+            tarifa: 28.35,
+            entregables: "Posts, interacción",
+            revisiones: 2,
+          },
+          "Premium (diario + métricas)": {
+            precio: 2310,
+            tiempo: 80,
+            tarifa: 28.35,
+            entregables: "Análisis, automatización",
+            revisiones: 3,
+          },
+        },
+        "EDICIÓN DE VIDEO": {
+          "Reel corto (30 seg)": {
+            precio: 158,
+            tiempo: 3,
+            tarifa: 52.5,
+            entregables: ".mp4 HD",
+            revisiones: 1,
+          },
+          "Video corporativo (2 min)": {
+            precio: 777,
+            tiempo: 10,
+            tarifa: 77.7,
+            entregables: ".mp4 + música libre",
+            revisiones: 2,
+          },
+          "Video animado": {
+            precio: 1943,
+            tiempo: 25,
+            tarifa: 77.7,
+            entregables: "Animación + audio",
+            revisiones: 3,
+          },
+        },
+        "FOTOGRAFÍA / RETOQUE": {
+          "Sesión personal (10 fotos)": {
+            precio: 389,
+            tiempo: 4,
+            tarifa: 96.6,
+            entregables: "JPG alta calidad",
+            revisiones: 1,
+          },
+          "Retoque por imagen": {
+            precio: 84,
+            tiempo: 1,
+            tarifa: 84.0,
+            entregables: "JPG retocado",
+            revisiones: 1,
+          },
+          "Pack productos e-commerce": {
+            precio: 777,
+            tiempo: 6,
+            tarifa: 129.15,
+            entregables: "JPG optimizado",
+            revisiones: 1,
+          },
+        },
+        "ASISTENCIA VIRTUAL": {
+          "Soporte administrativo": {
+            precio: 126,
+            tiempo: 8,
+            tarifa: 15.75,
+            entregables: "Agenda, hojas de cálculo, correos",
+            revisiones: 1,
+          },
+          "Atención clientes / CRM": {
+            precio: 252,
+            tiempo: 8,
+            tarifa: 31.5,
+            entregables: "Clientes, CRM, reportes",
+            revisiones: 2,
+          },
+          "Asistencia en inglés avanzado": {
+            precio: 462,
+            tiempo: 8,
+            tarifa: 57.75,
+            entregables: "Traducción, correos, llamadas técnicas",
+            revisiones: 3,
+          },
+        },
+        "MARKETING DIGITAL": {
+          "Campaña Meta Ads básica": {
+            precio: 583,
+            tiempo: 10,
+            tarifa: 57.75,
+            entregables: "Setup, segmentación, informe",
+            revisiones: 1,
+          },
+          "Google Ads + landing": {
+            precio: 1575,
+            tiempo: 22.5,
+            tarifa: 78.75,
+            entregables: "Análisis, keywords, landing",
+            revisiones: 2,
+          },
+          "Gestión mensual multicanal": {
+            precio: 3885,
+            tiempo: 80,
+            tarifa: 48.3,
+            entregables: "Estrategia, contenido, reportes",
+            revisiones: 3,
+          },
+        },
+      };
+
+      const categoriaSelect = document.getElementById("categoria");
+      Object.keys(tareas).forEach((cat) => {
+        const op = document.createElement("option");
+        op.value = cat;
+        op.textContent = cat;
+        categoriaSelect.appendChild(op);
+      });
+
+      document.getElementById("categoria").addEventListener("change", () => {
+        const cat = categoriaSelect.value;
+        const tareaSelect = document.getElementById("tarea");
+        tareaSelect.innerHTML =
+          '<option value="">Selecciona una tarea</option>';
+        if (tareas[cat]) {
+          Object.keys(tareas[cat]).forEach((t) => {
+            const op = document.createElement("option");
+            op.value = t;
+            op.textContent = t;
+            tareaSelect.appendChild(op);
+          });
+        }
+      });
+
+      document.getElementById("tarea").addEventListener("change", () => {
+        function actualizarTarifa() {
+          const precio = parseFloat(document.getElementById("precio").value);
+          const tiempo = parseFloat(document.getElementById("tiempo").value);
+          if (!isNaN(precio) && !isNaN(tiempo) && tiempo > 0) {
+            const tarifa = (precio / tiempo).toFixed(2);
+            document.getElementById("tarifa").value = `S/ ${tarifa}/h`;
+          } else {
+            document.getElementById("tarifa").value = "";
+          }
+        }
+
+        document
+          .getElementById("precio")
+          .addEventListener("input", actualizarTarifa);
+        document
+          .getElementById("tiempo")
+          .addEventListener("input", actualizarTarifa);
+
+        const cat = categoriaSelect.value;
+        const tarea = document.getElementById("tarea").value;
+        const info = tareas[cat][tarea];
+        if (info) {
+          document.getElementById("precio").value = info.precio;
+          document.getElementById("tiempo").value = info.tiempo;
+          actualizarTarifa();
+
+          // Cargar entregables como opciones seleccionables
+          const entregablesSelect = document.getElementById("entregables");
+          entregablesSelect.innerHTML = "";
+          const items = info.entregables.split(",").map((i) => i.trim());
+          items.forEach((item) => {
+            const opt = document.createElement("option");
+            opt.value = item;
+            opt.textContent = item;
+            entregablesSelect.appendChild(opt);
+          });
+
+          document.getElementById("revisiones").value = info.revisiones;
+        }
+      });
+
+      document
+        .getElementById("formProyecto")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+
+          const user = auth.currentUser;
+          if (!user) {
+            alert("Debes iniciar sesión.");
+            return;
+          }
+
+          const data = {
+            uid: user.uid,
+            categoria: categoriaSelect.value,
+            tarea: document.getElementById("tarea").value,
+            precio: parseFloat(document.getElementById("precio").value),
+            tiempo: parseFloat(document.getElementById("tiempo").value),
+            tarifa: document.getElementById("tarifa").value,
+            entregables: document.getElementById("entregables").value,
+
+            revisiones: parseInt(document.getElementById("revisiones").value),
+            creado: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+
+          db.collection("proyectos")
+            .add(data)
+            .then(() => {
+              document.getElementById("mensaje").textContent =
+                "✅ Proyecto guardado correctamente";
+              document.getElementById("mensaje").style.color = "green";
+              document.getElementById("formProyecto").reset();
+              document.getElementById("entregables").innerHTML = '<option value="">Selecciona un entregable</option>';
+
+              setTimeout(
+                () => (document.getElementById("mensaje").textContent = ""),
+                2500
+              );
+            })
+            .catch((err) => {
+              document.getElementById("mensaje").textContent =
+                "❌ Error: " + err.message;
+              document.getElementById("mensaje").style.color = "red";
+            });
+        });
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          db.collection("usuarios")
+            .doc(user.uid)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const nombre = doc.data().nombre;
+                document.getElementById("nombreUsuario").textContent = nombre;
+              }
+            });
+
+          const perfil = document.getElementById("perfilUsuario");
+          const menu = document.getElementById("menuUsuario");
+          perfil.addEventListener("click", () => {
+            menu.style.display =
+              menu.style.display === "none" ? "block" : "none";
+          });
+
+          document.addEventListener("click", function (event) {
+            if (!perfil.contains(event.target)) {
+              menu.style.display = "none";
+            }
+          });
+        }
+      });
+
+      function cerrarSesion() {
+        auth.signOut().then(() => {
+          window.location.href = "login.html";
+        });
+      }
+    </script>
+  </body>
+</html>

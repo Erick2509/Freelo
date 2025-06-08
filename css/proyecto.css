@@ -1,0 +1,147 @@
+/* Fondo diagonal morado-negro */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #6A0DAD, #000000);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Navegación superior */
+.nav {
+  width: 100%;
+  padding: 1rem 2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.nav .logo a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+.perfil-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.containerGeneral {
+  padding: 1rem;
+}
+
+.container {
+  background-color: #ffffff;
+  color: #333;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 600px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.container h1 {
+  color: #6C4FC3;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.card-proyecto {
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  color: #333;
+}
+
+.card-proyecto .img-proyecto {
+  background: #ddd;
+  border-radius: 10px;
+  padding: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.card-proyecto .contenido-proyecto {
+  flex: 1;
+}
+
+.card-proyecto h3 {
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.card-proyecto p {
+  margin: 0.2rem 0;
+}
+
+.logo img{
+  width: 100px;
+  height: 50px;
+  object-fit: cover;
+}
+
+
+@media screen and (max-width: 768px) {
+  .container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  .card-proyecto {
+    flex-direction: column;
+    text-align: left;
+  }
+  
+}
+
+#perfilUsuario {
+  position: relative;
+  cursor: pointer;
+}
+
+#menuUsuario {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#menuUsuario button {
+  display: block;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#menuUsuario button:hover {
+  background-color: #f0f0f0;
+}
+

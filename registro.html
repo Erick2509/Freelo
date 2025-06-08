@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelo - Registro</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header-login">Regístrate</div>
+      <form id="registroForm">
+        <input type="text" id="nombre" placeholder="Nombre completo" required />
+        <input
+          type="date"
+          id="nacimiento"
+          placeholder="Fecha de nacimiento"
+          required
+        />
+        <input
+          type="email"
+          id="email"
+          placeholder="Correo electrónico"
+          required
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Contraseña"
+          required
+        />
+        <button type="submit">Continuar</button>
+        <p>¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
+      </form>
+      <p id="estado"></p>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.firebasestorage.app",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      document
+        .getElementById("registroForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const nombre = document.getElementById("nombre").value;
+          const nacimiento = document.getElementById("nacimiento").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          auth
+            .createUserWithEmailAndPassword(email, password)
+            .then((userCred) => {
+              const uid = userCred.user.uid;
+              return db.collection("usuarios").doc(uid).set({
+                nombre: nombre,
+                nacimiento: nacimiento,
+                correo: email,
+                creado: firebase.firestore.FieldValue.serverTimestamp(),
+              });
+            })
+            .then(() => {
+              document.getElementById("estado").textContent =
+                "Registro exitoso ✅";
+              document.getElementById("registroForm").reset();
+              setTimeout(() => {
+                window.location.href = "index.html";
+              }, 1500); // Espera 1.5 segundos antes de redirigir
+            })
+
+            .catch((error) => {
+              document.getElementById("estado").textContent =
+                "Error: " + error.message;
+            });
+        });
+    </script>
+  </body>
+</html>

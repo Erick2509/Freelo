@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editar Proyecto</title>
+    <link rel="stylesheet" href="/css/proyectoP.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="logo">
+        <a href="index.html"><img src="img/logo.png" alt="" /></a>
+      </div>
+      <div class="perfil-container">
+        <span id="nombreUsuario"></span>
+        <div id="perfilUsuario" style="position: relative; cursor: pointer">
+          <i class="fa-solid fa-user"></i>
+          <div
+            id="menuUsuario"
+            style="
+              display: none;
+              position: absolute;
+              right: 0;
+              top: 30px;
+              background: white;
+              border: 1px solid #ccc;
+              padding: 10px;
+            "
+          >
+            <button onclick="cerrarSesion()">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu">
+      <div><a href="proyectoP.html">Nuevo</a></div>
+      <div><a href="verProyectos.html">Mis Proyectos</a></div>
+    </div>
+
+    <div class="container">
+      <h1>Editar Proyecto</h1>
+      <form id="formEditar">
+        <label>Categoría:</label>
+        <input type="text" id="categoria" readonly />
+
+        <label>Tarea:</label>
+        <input type="text" id="tarea" readonly />
+
+        <label>Precio (PEN):</label>
+        <input type="number" id="precio" required />
+
+        <label>Tiempo estimado (h):</label>
+        <input type="number" step="0.1" id="tiempo" required />
+
+        <label>Tarifa por hora:</label>
+        <input type="text" id="tarifa" readonly />
+
+        <label>Entregables:</label>
+        <input type="text" id="entregables" required />
+
+        <label>Revisiones:</label>
+        <input type="number" id="revisiones" required />
+
+        <button type="submit">Guardar Cambios</button>
+      </form>
+      <p id="mensaje" style="margin-top: 1rem"></p>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.firebasestorage.app",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const idProyecto = urlParams.get("id");
+
+      if (!idProyecto) {
+        alert("ID de proyecto no especificado.");
+        window.location.href = "verProyectos.html";
+      }
+
+      function actualizarTarifa() {
+        const precio = parseFloat(document.getElementById("precio").value);
+        const tiempo = parseFloat(document.getElementById("tiempo").value);
+        if (!isNaN(precio) && !isNaN(tiempo) && tiempo > 0) {
+          const tarifa = (precio / tiempo).toFixed(2);
+          document.getElementById("tarifa").value = `S/ ${tarifa}/h`;
+        } else {
+          document.getElementById("tarifa").value = "";
+        }
+      }
+
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          db.collection("usuarios")
+            .doc(user.uid)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                document.getElementById("nombreUsuario").textContent =
+                  doc.data().nombre;
+              }
+            });
+
+          const perfil = document.getElementById("perfilUsuario");
+          const menu = document.getElementById("menuUsuario");
+          perfil.addEventListener("click", () => {
+            menu.style.display =
+              menu.style.display === "none" ? "block" : "none";
+          });
+          document.addEventListener("click", function (event) {
+            if (!perfil.contains(event.target)) {
+              menu.style.display = "none";
+            }
+          });
+
+          db.collection("proyectos")
+            .doc(idProyecto)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const data = doc.data();
+                document.getElementById("categoria").value = data.categoria;
+                document.getElementById("tarea").value = data.tarea;
+                document.getElementById("precio").value = data.precio;
+                document.getElementById("tiempo").value = data.tiempo;
+                document.getElementById("tarifa").value = data.tarifa;
+                document.getElementById("entregables").value = data.entregables;
+                document.getElementById("revisiones").value = data.revisiones;
+
+                // Activar actualización automática de tarifa
+                document
+                  .getElementById("precio")
+                  .addEventListener("input", actualizarTarifa);
+                document
+                  .getElementById("tiempo")
+                  .addEventListener("input", actualizarTarifa);
+              } else {
+                alert("Proyecto no encontrado.");
+                window.location.href = "verProyectos.html";
+              }
+            });
+        } else {
+          window.location.href = "login.html";
+        }
+      });
+
+      document.getElementById("formEditar").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const precio = parseFloat(document.getElementById("precio").value);
+        const tiempo = parseFloat(document.getElementById("tiempo").value);
+        const tarifa = `S/ ${(precio / tiempo).toFixed(2)}/h`;
+
+        const data = {
+          precio: precio,
+          tiempo: tiempo,
+          tarifa: tarifa,
+          entregables: document.getElementById("entregables").value,
+          revisiones: parseInt(document.getElementById("revisiones").value),
+        };
+
+        db.collection("proyectos")
+          .doc(idProyecto)
+          .update(data)
+          .then(() => {
+            document.getElementById("mensaje").textContent =
+              "✅ Proyecto actualizado";
+            document.getElementById("mensaje").style.color = "green";
+            setTimeout(() => {
+              window.location.href = "verProyectos.html";
+            }, 2000);
+          })
+          .catch((err) => {
+            document.getElementById("mensaje").textContent =
+              "❌ Error: " + err.message;
+            document.getElementById("mensaje").style.color = "red";
+          });
+      });
+
+      function cerrarSesion() {
+        auth.signOut().then(() => {
+          window.location.href = "login.html";
+        });
+      }
+    </script>
+  </body>
+</html>
