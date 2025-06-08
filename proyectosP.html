@@ -14,10 +14,25 @@
       src="https://kit.fontawesome.com/daa3e12514.js"
       crossorigin="anonymous"
     ></script>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-WTHNTFEX91"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-WTHNTFEX91");
+    </script>
   </head>
   <body>
     <div class="nav">
-      <div class="logo"><a href="index.html"><img src="img/logo.png" alt=""></a></div>
+      <div class="logo">
+        <a href="index.html"><img src="img/logo.png" alt="" /></a>
+      </div>
       <div class="perfil-container">
         <span id="nombreUsuario"></span>
 
@@ -45,12 +60,12 @@
       </div>
     </div>
     <div class="menu">
-        <div>
-            <a href="proyectosP.html">Nuevo</a>
-        </div>
-        <div>
-            <a href="verProyectos.html">Mis Proyectos</a>
-        </div>
+      <div>
+        <a href="proyectosP.html">Nuevo</a>
+      </div>
+      <div>
+        <a href="verProyectos.html">Mis Proyectos</a>
+      </div>
     </div>
     <div class="container">
       <h1>Agregar Proyecto</h1>
@@ -433,7 +448,8 @@
                 "✅ Proyecto guardado correctamente";
               document.getElementById("mensaje").style.color = "green";
               document.getElementById("formProyecto").reset();
-              document.getElementById("entregables").innerHTML = '<option value="">Selecciona un entregable</option>';
+              document.getElementById("entregables").innerHTML =
+                '<option value="">Selecciona un entregable</option>';
 
               setTimeout(
                 () => (document.getElementById("mensaje").textContent = ""),

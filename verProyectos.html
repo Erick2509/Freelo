@@ -12,10 +12,26 @@
       src="https://kit.fontawesome.com/daa3e12514.js"
       crossorigin="anonymous"
     ></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-WTHNTFEX91"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-WTHNTFEX91");
+    </script>
   </head>
   <body>
     <div class="nav">
-      <div class="logo"><a href="index.html"><img src="img/logo.png" alt=""></a></div>
+      <div class="logo">
+        <a href="index.html"><img src="img/logo.png" alt="" /></a>
+      </div>
       <div class="perfil-container">
         <span id="nombreUsuario"></span>
         <div id="perfilUsuario" style="position: relative; cursor: pointer">
@@ -136,29 +152,28 @@
           });
       }
 
+      function eliminarProyecto(id) {
+        const modal = document.getElementById("modalConfirm");
+        modal.style.display = "block";
 
-        function eliminarProyecto(id) {
-            const modal = document.getElementById("modalConfirm");
-            modal.style.display = "block";
-    
-            document.getElementById("btnCancelar").onclick = function () {
-            modal.style.display = "none";
-            };
-    
-            document.getElementById("btnConfirmar").onclick = function () {
-            db.collection("proyectos")
-                .doc(id)
-                .delete()
-                .then(() => {
-                modal.style.display = "none";
-                window.location.reload();
-                })
-                .catch((error) => {
-                console.error("Error al eliminar el proyecto: ", error);
-                });
-            };
-        }
-      
+        document.getElementById("btnCancelar").onclick = function () {
+          modal.style.display = "none";
+        };
+
+        document.getElementById("btnConfirmar").onclick = function () {
+          db.collection("proyectos")
+            .doc(id)
+            .delete()
+            .then(() => {
+              modal.style.display = "none";
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Error al eliminar el proyecto: ", error);
+            });
+        };
+      }
+
       function redirigirEditar(id) {
         localStorage.setItem("proyectoId", id);
         window.location.href = "editarProyecto.html";
