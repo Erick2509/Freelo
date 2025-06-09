@@ -12,20 +12,6 @@
       src="https://kit.fontawesome.com/daa3e12514.js"
       crossorigin="anonymous"
     ></script>
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-WTHNTFEX91"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-WTHNTFEX91");
-    </script>
   </head>
   <body>
     <div class="nav">
@@ -47,6 +33,14 @@
     <div class="containerGeneral">
       <main class="container">
         <h1>Proyectos Disponibles</h1>
+
+        <div class="filtro-container">
+          <button id="btnFiltro">
+            <i class="fa-solid fa-filter"></i> Filtrar por categoría
+          </button>
+          <div id="menuFiltro"></div>
+        </div>
+
         <div id="listaProyectos" style="margin-top: 2rem"></div>
       </main>
     </div>
@@ -70,17 +64,36 @@
       const menu = document.getElementById("menuUsuario");
       const spanNombre = document.getElementById("nombreUsuario");
 
+      const tareas = {
+        "DISEÑO GRÁFICO": {},
+        TRADUCCIÓN: {},
+        "REDACCIÓN / COPYWRITING": {},
+        "DESARROLLO WEB": {},
+        "APP MÓVIL": {},
+        "COMMUNITY MANAGER": {},
+        "EDICIÓN DE VIDEO": {},
+        "FOTOGRAFÍA / RETOQUE": {},
+        "ASISTENCIA VIRTUAL": {},
+        "MARKETING DIGITAL": {},
+      };
+
+      const menuFiltro = document.getElementById("menuFiltro");
+
+      // Generar filtros dinámicamente
+      menuFiltro.innerHTML = `<label><input type="radio" name="filtro" value="todos" checked /> Todos</label>`;
+      Object.keys(tareas).forEach((cat) => {
+        menuFiltro.innerHTML += `<label><input type="radio" name="filtro" value="${cat.toLowerCase()}" /> ${cat}</label>`;
+      });
+
       function obtenerNombreUsuario(uid) {
         return db
           .collection("usuarios")
           .doc(uid)
           .get()
-          .then((doc) => {
-            return doc.exists ? doc.data().nombre : "Anónimo";
-          });
+          .then((doc) => (doc.exists ? doc.data().nombre : "Anónimo"));
       }
 
-      function cargarProyectos() {
+      function cargarProyectos(filtro = "todos") {
         db.collection("proyectos")
           .orderBy("creado", "desc")
           .get()
@@ -93,25 +106,35 @@
               return;
             }
 
+            let hayCoincidencias = false;
+
             for (const doc of snapshot.docs) {
               const p = doc.data();
-              const nombreCreador = await obtenerNombreUsuario(p.uid);
+              if (filtro !== "todos" && p.categoria.toLowerCase() !== filtro)
+                continue;
 
+              hayCoincidencias = true;
+              const nombreCreador = await obtenerNombreUsuario(p.uid);
               contenedor.innerHTML += `
-              <div class="card-proyecto">
-                <div class="img-proyecto"><span class="icono">📁</span></div>
-                <div class="contenido-proyecto">
-                  <h3>${p.tarea}</h3>
-                  <p><strong>Creado por:</strong> ${nombreCreador}</p>
-                  <p><strong>Categoría:</strong> ${p.categoria}</p>
-                  <p><strong>Precio:</strong> S/ ${p.precio}</p>
-                  <p><strong>Tiempo estimado:</strong> ${p.tiempo} h</p>
-                  <p><strong>Tarifa/hora:</strong> ${p.tarifa}</p>
-                  <p><strong>Entregables:</strong> ${p.entregables}</p>
-                  <p><strong>Revisiones:</strong> ${p.revisiones}</p>
-                </div>
-              </div>
-            `;
+          <div class="card-proyecto">
+            <div class="img-proyecto"><span class="icono">📁</span></div>
+            <div class="contenido-proyecto">
+              <h3>${p.tarea}</h3>
+              <p><strong>Creado por:</strong> ${nombreCreador}</p>
+              <p><strong>Categoría:</strong> ${p.categoria}</p>
+              <p><strong>Precio:</strong> S/ ${p.precio}</p>
+              <p><strong>Tiempo estimado:</strong> ${p.tiempo} h</p>
+              <p><strong>Tarifa/hora:</strong> ${p.tarifa}</p>
+              <p><strong>Entregables:</strong> ${p.entregables}</p>
+              <p><strong>Revisiones:</strong> ${p.revisiones}</p>
+            </div>
+          </div>
+        `;
+            }
+
+            if (!hayCoincidencias) {
+              contenedor.innerHTML =
+                "<p>No hay proyectos en esta categoría.</p>";
             }
           })
           .catch((error) => {
@@ -121,8 +144,31 @@
           });
       }
 
-      // Cargar siempre los proyectos al inicio
+      // Cargar proyectos al iniciar
       cargarProyectos();
+
+      // Mostrar/ocultar menú de filtro
+      document.getElementById("btnFiltro").addEventListener("click", () => {
+        menuFiltro.style.display =
+          menuFiltro.style.display === "block" ? "none" : "block";
+      });
+
+      // Cerrar menú al hacer clic fuera
+      document.addEventListener("click", (e) => {
+        if (
+          !document.getElementById("btnFiltro").contains(e.target) &&
+          !menuFiltro.contains(e.target)
+        ) {
+          menuFiltro.style.display = "none";
+        }
+      });
+
+      // Asignar evento a los filtros dinámicos
+      menuFiltro.addEventListener("change", (e) => {
+        if (e.target.name === "filtro") {
+          cargarProyectos(e.target.value);
+        }
+      });
 
       auth.onAuthStateChanged((user) => {
         if (user) {

@@ -145,3 +145,34 @@ body {
   background-color: #f0f0f0;
 }
 
+.filtro-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+#btnFiltro {
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#menuFiltro {
+  display: none;
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  top: 40px;
+  left: 0;
+  z-index: 1000;
+}
+
+#menuFiltro label {
+  display: block;
+  margin: 5px 0;
+  cursor: pointer;
+}
