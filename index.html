@@ -3,46 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Freelo - Proyectos</title>
-    <link rel="stylesheet" href="/css/proyecto.css" />
+    <title>Freelo - Login</title>
+    <link rel="stylesheet" href="/css/style.css" />
+
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Google tag (gtag.js) -->
     <script
-      src="https://kit.fontawesome.com/daa3e12514.js"
-      crossorigin="anonymous"
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-WTHNTFEX91"
     ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-WTHNTFEX91");
+    </script>
   </head>
   <body>
-    <div class="nav">
-      <div class="logo">
-        <a href="index.html"><img src="img/logo.png" alt="" /></a>
-      </div>
-      <div class="perfil-container">
-        <span id="nombreUsuario" style="font-weight: bold"></span>
-        <div id="perfilUsuario">
-          <i class="fa-solid fa-user"></i>
-          <div id="menuUsuario">
-            <button onclick="irAMisProyectos()">🗂️ Mis proyectos</button>
-            <button onclick="cerrarSesion()">🔓 Cerrar sesión</button>
-          </div>
-        </div>
-      </div>
+    <div class="top-banner">
+      <img src="/img/logo.png" alt="Logo Freelo" class="logo-img" />
     </div>
-
-    <div class="containerGeneral">
-      <main class="container">
-        <h1>Proyectos Disponibles</h1>
-
-        <div class="filtro-container">
-          <button id="btnFiltro">
-            <i class="fa-solid fa-filter"></i> Filtrar por categoría
-          </button>
-          <div id="menuFiltro"></div>
-        </div>
-
-        <div id="listaProyectos" style="margin-top: 2rem"></div>
-      </main>
+    <div class="container">
+      <div class="header-login">Iniciar Sesión</div>
+      <form id="loginForm">
+        <input
+          type="email"
+          id="email"
+          placeholder="Correo electrónico"
+          required
+        />
+        <input
+          type="password"
+          id="password"
+          placeholder="Contraseña"
+          required
+        />
+        <button type="submit">Continuar</button>
+        <p>¿No tienes cuenta? <a href="registro.html">Regístrate</a></p>
+      </form>
+      <p id="estado"></p>
     </div>
 
     <script>
@@ -60,151 +65,25 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
-      const perfil = document.getElementById("perfilUsuario");
-      const menu = document.getElementById("menuUsuario");
-      const spanNombre = document.getElementById("nombreUsuario");
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
 
-      const tareas = {
-        "DISEÑO GRÁFICO": {},
-        TRADUCCIÓN: {},
-        "REDACCIÓN / COPYWRITING": {},
-        "DESARROLLO WEB": {},
-        "APP MÓVIL": {},
-        "COMMUNITY MANAGER": {},
-        "EDICIÓN DE VIDEO": {},
-        "FOTOGRAFÍA / RETOQUE": {},
-        "ASISTENCIA VIRTUAL": {},
-        "MARKETING DIGITAL": {},
-      };
-
-      const menuFiltro = document.getElementById("menuFiltro");
-
-      // Generar filtros dinámicamente
-      menuFiltro.innerHTML = `<label><input type="radio" name="filtro" value="todos" checked /> Todos</label>`;
-      Object.keys(tareas).forEach((cat) => {
-        menuFiltro.innerHTML += `<label><input type="radio" name="filtro" value="${cat.toLowerCase()}" /> ${cat}</label>`;
-      });
-
-      function obtenerNombreUsuario(uid) {
-        return db
-          .collection("usuarios")
-          .doc(uid)
-          .get()
-          .then((doc) => (doc.exists ? doc.data().nombre : "Anónimo"));
-      }
-
-      function cargarProyectos(filtro = "todos") {
-        db.collection("proyectos")
-          .orderBy("creado", "desc")
-          .get()
-          .then(async (snapshot) => {
-            const contenedor = document.getElementById("listaProyectos");
-            contenedor.innerHTML = "";
-
-            if (snapshot.empty) {
-              contenedor.innerHTML = "<p>No hay proyectos disponibles.</p>";
-              return;
-            }
-
-            let hayCoincidencias = false;
-
-            for (const doc of snapshot.docs) {
-              const p = doc.data();
-              if (filtro !== "todos" && p.categoria.toLowerCase() !== filtro)
-                continue;
-
-              hayCoincidencias = true;
-              const nombreCreador = await obtenerNombreUsuario(p.uid);
-              contenedor.innerHTML += `
-          <div class="card-proyecto">
-            <div class="img-proyecto"><span class="icono">📁</span></div>
-            <div class="contenido-proyecto">
-              <h3>${p.tarea}</h3>
-              <p><strong>Creado por:</strong> ${nombreCreador}</p>
-              <p><strong>Categoría:</strong> ${p.categoria}</p>
-              <p><strong>Precio:</strong> S/ ${p.precio}</p>
-              <p><strong>Tiempo estimado:</strong> ${p.tiempo} h</p>
-              <p><strong>Tarifa/hora:</strong> ${p.tarifa}</p>
-              <p><strong>Entregables:</strong> ${p.entregables}</p>
-              <p><strong>Revisiones:</strong> ${p.revisiones}</p>
-            </div>
-          </div>
-        `;
-            }
-
-            if (!hayCoincidencias) {
-              contenedor.innerHTML =
-                "<p>No hay proyectos en esta categoría.</p>";
-            }
-          })
-          .catch((error) => {
-            document.getElementById(
-              "listaProyectos"
-            ).innerHTML = `<p>Error al cargar proyectos: ${error.message}</p>`;
-          });
-      }
-
-      // Cargar proyectos al iniciar
-      cargarProyectos();
-
-      // Mostrar/ocultar menú de filtro
-      document.getElementById("btnFiltro").addEventListener("click", () => {
-        menuFiltro.style.display =
-          menuFiltro.style.display === "block" ? "none" : "block";
-      });
-
-      // Cerrar menú al hacer clic fuera
-      document.addEventListener("click", (e) => {
-        if (
-          !document.getElementById("btnFiltro").contains(e.target) &&
-          !menuFiltro.contains(e.target)
-        ) {
-          menuFiltro.style.display = "none";
-        }
-      });
-
-      // Asignar evento a los filtros dinámicos
-      menuFiltro.addEventListener("change", (e) => {
-        if (e.target.name === "filtro") {
-          cargarProyectos(e.target.value);
-        }
-      });
-
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          db.collection("usuarios")
-            .doc(user.uid)
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                spanNombre.textContent = doc.data().nombre;
-              }
+          auth
+            .signInWithEmailAndPassword(email, password)
+            .then((userCred) => {
+              document.getElementById("estado").textContent =
+                "Login exitoso ✅";
+              window.location.href = "menu.html";
+            })
+            .catch((error) => {
+              document.getElementById("estado").textContent =
+                "Usuario o contraseña incorrectos ❌";
             });
-
-          perfil.addEventListener("click", () => {
-            menu.style.display =
-              menu.style.display === "none" ? "block" : "none";
-          });
-
-          document.addEventListener("click", (e) => {
-            if (!perfil.contains(e.target)) {
-              menu.style.display = "none";
-            }
-          });
-        } else {
-          perfil.onclick = () => (window.location.href = "login.html");
-        }
-      });
-
-      function cerrarSesion() {
-        auth.signOut().then(() => {
-          window.location.href = "login.html";
         });
-      }
-
-      function irAMisProyectos() {
-        window.location.href = "verProyectos.html";
-      }
     </script>
   </body>
 </html>

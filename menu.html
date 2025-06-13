@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tarifario Freelancers</title>
+    <link rel="stylesheet" href="/css/menu.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <!-- Perfil de usuario -->
+    <div class="perfil-container">
+      <span id="nombreUsuario">Cargando...</span>
+      <div id="perfilUsuario">
+        <img id="fotoUsuario" src="img/default-user.png" alt="Perfil" />
+        <i class="fa-solid fa-caret-down"></i>
+        <div id="menuUsuario">
+          <button onclick="verPerfil()">👤 Ver perfil</button>
+          <button onclick="cerrarSesion()">🔓 Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="header">
+      <img src="img/banner.png" alt="Banner Freelancers" />
+      <h1>Cotiza Tarifarios para Freelancers</h1>
+      <p>Encuentra tarifas justas para tus servicios freelance</p>
+      <button class="cta-button">EMPIEZA COTIZAR</button>
+    </div>
+
+    <div class="tarifario">
+      <h2>Tarifario</h2>
+      <table>
+        <thead>
+          <tr><th>Categoría</th><th>Junior</th><th>Semi Senior</th><th>Senior</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Diseño Gráfico</td><td>S/.30</td><td>S/.50</td><td>S/.80</td></tr>
+          <tr><td>Redacción y Copywriting</td><td>S/.20</td><td>S/.35</td><td>S/.60</td></tr>
+          <tr><td>Programación y Desarrollo Web</td><td>S/.40</td><td>S/.70</td><td>S/.100</td></tr>
+          <tr><td>Marketing Digital</td><td>S/.25</td><td>S/.45</td><td>S/.70</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="simulador-info">
+      <h2>Simulador</h2>
+      <p>Calcula una tarifa justa según tu experiencia, tipo de servicio, tiempo estimado y otros factores clave.</p>
+      <button >COMPLETAR CUESTIONARIO</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalFormulario" class="modal" onclick="cerrarSiClickFuera(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-btn" onclick="cerrarModal()">&times;</span>
+        <h2>Simulador</h2>
+        <form onsubmit="guardarSimulacion(event)">
+          <input type="text" id="nombre" placeholder="Tu nombre" required />
+          <select id="categoria" required>
+            <option value="">Categoría</option>
+            <option value="diseño gráfico">Diseño Gráfico</option>
+            <option value="redacción y copywriting">Redacción y Copywriting</option>
+            <option value="programación y desarrollo web">Programación y Desarrollo Web</option>
+            <option value="marketing digital">Marketing Digital</option>
+          </select>
+          <select id="experiencia" required>
+            <option value="">Nivel</option>
+            <option value="junior">Junior</option>
+            <option value="semi">Semi Senior</option>
+            <option value="senior">Senior</option>
+          </select>
+          <button type="submit">CALCULAR Y GUARDAR</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Firebase + lógica del perfil -->
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.appspot.com",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      const tarifas = {
+        "diseño gráfico": { junior: 30, semi: 50, senior: 80 },
+        "redacción y copywriting": { junior: 20, semi: 35, senior: 60 },
+        "programación y desarrollo web": { junior: 40, semi: 70, senior: 100 },
+        "marketing digital": { junior: 25, semi: 45, senior: 70 }
+      };
+
+      const perfil = document.getElementById("perfilUsuario");
+      const menu = document.getElementById("menuUsuario");
+      const spanNombre = document.getElementById("nombreUsuario");
+      const fotoUsuario = document.getElementById("fotoUsuario");
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          const uid = user.uid;
+          const nombreGuardado = localStorage.getItem("nombreUsuario");
+          const fotoGuardada = localStorage.getItem("fotoUsuario");
+
+          if (nombreGuardado) spanNombre.textContent = nombreGuardado;
+          if (fotoGuardada) fotoUsuario.src = fotoGuardada;
+
+          db.collection("usuarios").doc(uid).get().then(doc => {
+            if (doc.exists) {
+              const data = doc.data();
+              const nombre = data.nombre || "Usuario";
+              const foto = data.fotoURL || "img/default-user.png";
+              spanNombre.textContent = nombre;
+              fotoUsuario.src = foto;
+              localStorage.setItem("nombreUsuario", nombre);
+              localStorage.setItem("fotoUsuario", foto);
+            }
+          });
+        }
+      });
+
+      perfil.addEventListener("click", () => {
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      });
+
+      document.addEventListener("click", e => {
+        if (!perfil.contains(e.target)) menu.style.display = "none";
+      });
+
+      function verPerfil() {
+        window.location.href = "verPerfil.html";
+      }
+
+      function cerrarSesion() {
+        localStorage.removeItem("nombreUsuario");
+        localStorage.removeItem("fotoUsuario");
+        firebase.auth().signOut().then(() => {
+          window.location.href = "index.html";
+        });
+      }
+
+      function abrirModal() {
+        const modal = document.getElementById("modalFormulario");
+        const content = modal.querySelector(".modal-content");
+        modal.style.display = "flex";
+        content.classList.remove("hide");
+        document.addEventListener("keydown", cerrarConEsc);
+      }
+
+      function cerrarModal() {
+        const modal = document.getElementById("modalFormulario");
+        const content = modal.querySelector(".modal-content");
+        content.classList.add("hide");
+        setTimeout(() => {
+          modal.style.display = "none";
+          content.classList.remove("hide");
+        }, 300);
+        document.removeEventListener("keydown", cerrarConEsc);
+      }
+
+      function cerrarConEsc(e) {
+        if (e.key === "Escape") cerrarModal();
+      }
+
+      function cerrarSiClickFuera(e) {
+        if (e.target.id === "modalFormulario") cerrarModal();
+      }
+
+      function guardarSimulacion(e) {
+        e.preventDefault();
+        const nombre = document.getElementById("nombre").value.trim();
+        const categoria = document.getElementById("categoria").value;
+        const experiencia = document.getElementById("experiencia").value;
+
+        if (!nombre || !categoria || !experiencia || !tarifas[categoria] || !tarifas[categoria][experiencia]) {
+          alert("Por favor, completa todos los campos correctamente.");
+          return;
+        }
+
+        const tarifa = tarifas[categoria][experiencia];
+
+        db.collection("simulaciones").add({
+          nombre,
+          categoria,
+          experiencia,
+          tarifa,
+          creado: new Date()
+        }).then(() => {
+          alert(`Tu tarifa estimada es de S/.${tarifa}. Guardado correctamente.`);
+          cerrarModal();
+        }).catch((error) => {
+          alert("Error al guardar: " + error.message);
+        });
+      }
+    </script>
+  </body>
+</html>

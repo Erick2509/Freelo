@@ -1,135 +1,251 @@
 /* Fondo degradado morado-negro */
 body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(to bottom right, #6A0DAD, #000000);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  /* Contenedor del formulario */
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #6952EB, #141414);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Contenedor del formulario */
+.container {
+  background-color: #fff;
+  padding: 3rem 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+}
+
+/* Imagen de perfil */
+.container::before {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png');
+  background-size: cover;
+  background-position: center;
+  margin: 0 auto 1.2rem auto;
+  animation: bounce 1.5s infinite;
+}
+
+/* Animación tipo rebote */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Logo opcional */
+.logo-img {
+  width: 100px;
+  margin-bottom: 1rem;
+  animation: fadeInDown 1s ease;
+}
+
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Título */
+.header-login {
+  font-size: 1.8rem;
+  color: #6A0DAD;
+  margin-bottom: 1.2rem;
+  font-weight: bold;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="file"],
+textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* Contador de caracteres */
+#contador {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: -0.2rem;
+  text-align: right;
+}
+
+/* Estilo para chips dinámicos */
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  justify-content: center;
+}
+
+.chip {
+  position: relative;
+}
+
+.chip input[type="checkbox"] {
+  display: none;
+}
+
+.chip span {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: #eee;
+  color: #333;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+  user-select: none;
+}
+
+.chip input[type="checkbox"]:checked + span {
+  background-color: #6A0DAD;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 0 6px rgba(106, 13, 173, 0.4);
+}
+
+/* Botón */
+button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background-color: #6A0DAD;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #5a0ca5;
+}
+
+/* Texto inferior */
+p {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+p a {
+  color: #6A0DAD;
+  text-decoration: none;
+}
+
+p a:hover {
+  text-decoration: underline;
+}
+
+/* Mensaje de estado */
+#estado {
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #e53935;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
   .container {
-    background: white;
-    padding: 3rem 2rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
-    text-align: center;
-    position: relative;
+    padding: 2.5rem 1.5rem;
   }
-  
-  /* Imagen de perfil */
-  .container::before {
-    content: "";
-    display: block;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background-image: url('https://cdn-icons-png.flaticon.com/512/149/149071.png');
-    background-size: cover;
-    background-position: center;
-    margin: 0 auto 1.2rem auto;
-    animation: bounce 1.5s infinite;
+
+  .chips-container {
+    justify-content: flex-start;
   }
-  
-  /* Animación tipo rebote */
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-  
-  /* Animación de entrada del logo */
-  .logo-img {
-    width: 100px;
-    margin-bottom: 1rem;
-    animation: fadeInDown 1s ease;
-  }
-  
-  @keyframes fadeInDown {
-    0% {
-      opacity: 0;
-      transform: translateY(-30px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Título */
-  .header-login {
-    font-size: 1.8rem;
-    color: #6A0DAD;
-    margin-bottom: 1.2rem;
-    font-weight: bold;
-  }
-  
-  /* Inputs */
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="date"] {
-    width: 100%;
-    padding: 0.75rem;
-    margin: 0.5rem 0;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 1rem;
-    box-sizing: border-box;
-  }
-  
-  /* Botón */
-  button {
-    width: 100%;
-    padding: 0.75rem;
-    margin-top: 1rem;
-    background-color: #6A0DAD;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #5a0ca5;
-  }
-  
-  /* Texto inferior */
-  p {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #333;
-  }
-  
-  p a {
-    color: #6A0DAD;
-    text-decoration: none;
-  }
-  
-  p a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Mensaje de estado */
-  #estado {
-    margin-top: 1rem;
-    font-weight: bold;
-    color: #e53935;
-  }
-  
-  /* Responsive */
-  @media (max-width: 480px) {
-    .container {
-      padding: 2.5rem 1.5rem;
-    }
-  }
+}
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+/* Estilo para cada chip */
+.chip {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Oculta el checkbox */
+.chip input[type="checkbox"] {
+  display: none;
+}
+
+/* Estado activo del chip */
+.chip input[type="checkbox"]:checked + span {
+  background-color: #6952EB;
+  color: white;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+}
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Ocultar radio */
+.chip input[type="radio"] {
+  display: none;
+}
+
+/* Estilo cuando está seleccionado */
+.chip input[type="radio"]:checked + span {
+  background-color: #6952EB;
+  color: white;
+  border-radius: 20px;
+  padding: 0.5rem 1.2rem;
+}
+

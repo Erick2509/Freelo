@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="/css/verPerfil.css" />
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <a href="menu.html" class="btn-volver">
+      <i class="fa-solid fa-arrow-left"></i> Volver
+    </a>
+
+    <div class="perfil-container">
+      <div id="perfilUsuario">
+        <img id="fotoUsuario" src="img/default-user.png" alt="Foto de perfil" />
+        <p id="generoUsuario">Género:</p>
+        <h2 id="nombreUsuarioPerfil">Nombre</h2>
+        <p id="fechaNacimiento">Nacimiento:</p>
+        <p id="aboutMe">Acerca de mí:</p>
+        <p id="emailUsuario">Correo:</p>
+
+        <div id="interesesContainer">
+          <h3>Intereses:</h3>
+          <div id="intereses"></div>
+        </div>
+      </div>
+
+      <button onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.appspot.com",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+        measurementId: "G-WTHNTFEX91",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      const perfilImg = document.getElementById("fotoUsuario");
+      const spanNombre = document.getElementById("nombreUsuarioPerfil");
+      const emailUsuario = document.getElementById("emailUsuario");
+      const aboutMe = document.getElementById("aboutMe");
+      const generoUsuario = document.getElementById("generoUsuario");
+      const fechaNacimiento = document.getElementById("fechaNacimiento");
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          const uid = user.uid;
+
+          db.collection("usuarios")
+            .doc(uid)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const data = doc.data();
+                const nombre = data.nombre || "Usuario";
+                const genero = data.genero || "No especificado";
+                const nacimiento = data.nacimiento || "No disponible";
+                const foto = data.fotoURL || "img/default-user.png";
+                const bio = data.bio || "No se ha agregado información.";
+                const intereses = data.intereses || [];
+
+                // Mostrar datos
+                spanNombre.textContent = nombre;
+                perfilImg.src = foto;
+                generoUsuario.textContent = "Género: " + genero;
+                fechaNacimiento.textContent = "Nacimiento: " + nacimiento;
+                aboutMe.textContent = "Acerca de mí: " + bio;
+                emailUsuario.textContent = "Correo: " + user.email;
+
+                // Intereses
+                const interesesDiv = document.getElementById("intereses");
+                interesesDiv.innerHTML = "";
+                intereses.forEach((interes) => {
+                  const span = document.createElement("span");
+                  span.classList.add("interest");
+                  span.textContent = interes;
+                  interesesDiv.appendChild(span);
+                });
+              }
+            });
+        } else {
+          window.location.href = "index.html";
+        }
+      });
+
+      function cerrarSesion() {
+        localStorage.removeItem("nombreUsuario");
+        localStorage.removeItem("fotoUsuario");
+        firebase
+          .auth()
+          .signOut()
+          .then(() => {
+            window.location.href = "index.html";
+          });
+      }
+    </script>
+  </body>
+</html>

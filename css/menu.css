@@ -1,0 +1,261 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #0f0f1a;
+  color: white;
+  padding: 1rem;
+}
+
+.header {
+  text-align: center;
+  padding-bottom: 2rem;
+}
+
+.header img {
+  max-width: 150px;
+  margin-bottom: 1rem;
+}
+
+.cta-button {
+  background-color: #7a5cfa;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.tarifario, .simulador-info {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.tarifario table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #161621;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid #2a2a3b;
+}
+
+th {
+  background-color: #1f1f2e;
+}
+
+.simulador-info button {
+  background-color: #c6ff3a;
+  color: black;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content {
+  background-color: #1f1f2e;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: scaleUp 0.3s ease-out;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  position: relative;
+}
+
+.modal-content.hide {
+  animation: scaleDown 0.3s ease-in forwards;
+}
+
+.modal-content input, .modal-content select {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.modal-content input:invalid, .modal-content select:invalid {
+  border-color: #ff4d4d;
+}
+
+.modal-content button {
+  margin-top: 1rem;
+  background-color: #c6ff3a;
+  color: black;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+}
+
+/* Estilos del contenedor de perfil */
+.perfil-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Estilos del icono de perfil */
+#perfilUsuario {
+  position: relative;
+  cursor: pointer;
+}
+
+#iconoPerfil {
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Estilos del menú desplegable */
+#menuUsuario {
+  display: none;
+  position: absolute;
+  top: 2.5rem;
+  right: 0;
+  background-color: #1f1f2e;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  padding: 0.5rem 0;
+  width: 100px;
+  animation: fadeIn 0.3s ease-in-out;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  z-index: 1000;
+}
+
+#menuUsuario button {
+  display: block;
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+#menuUsuario button:hover {
+  background-color: #333;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleDown {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+.perfil-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+}
+
+#perfilUsuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+}
+
+#fotoUsuario {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #6952EB;
+}
+
+#menuUsuario {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 150px;
+}
+
+#menuUsuario button {
+  padding: 10px;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+
+#nombreUsuario {
+  margin-right: 10px;
+  font-weight: 600;
+}

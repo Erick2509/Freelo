@@ -5,23 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Freelo - Registro</title>
     <link rel="stylesheet" href="/css/registro.css" />
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-WTHNTFEX91"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-WTHNTFEX91");
-    </script>
   </head>
   <body>
     <div class="container">
@@ -34,6 +24,19 @@
           placeholder="Fecha de nacimiento"
           required
         />
+
+        <label>Selecciona tu género:</label>
+        <div class="chips-container" id="genero">
+          <label class="chip">
+            <input type="radio" name="genero" value="masculino" required />
+            <span>Masculino</span>
+          </label>
+          <label class="chip">
+            <input type="radio" name="genero" value="femenino" />
+            <span>Femenino</span>
+          </label>
+        </div>
+
         <input
           type="email"
           id="email"
@@ -45,9 +48,45 @@
           id="password"
           placeholder="Contraseña"
           required
+          minlength="6"
         />
+
+        <textarea
+          id="bio"
+          placeholder="Acerca de mí (máx. 200 caracteres)"
+          maxlength="200"
+          rows="4"
+          style="
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 8px;
+          "
+        ></textarea>
+        <p id="contador" style="color: #aaa">200 caracteres restantes</p>
+
+        <label for="intereses">Selecciona tus intereses:</label>
+        <div class="chips-container" id="intereses">
+          <label class="chip">
+            <input type="checkbox" value="Diseño" />
+            <span>Diseño</span>
+          </label>
+          <label class="chip">
+            <input type="checkbox" value="Desarrollo" />
+            <span>Desarrollo</span>
+          </label>
+          <label class="chip">
+            <input type="checkbox" value="Marketing" />
+            <span>Marketing</span>
+          </label>
+          <label class="chip">
+            <input type="checkbox" value="Redacción" />
+            <span>Redacción</span>
+          </label>
+        </div>
+
         <button type="submit">Continuar</button>
-        <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+        <p>¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
       </form>
       <p id="estado"></p>
     </div>
@@ -57,7 +96,7 @@
         apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
         authDomain: "freelo-e73e6.firebaseapp.com",
         projectId: "freelo-e73e6",
-        storageBucket: "freelo-e73e6.firebasestorage.app",
+        storageBucket: "freelo-e73e6.appspot.com",
         messagingSenderId: "777861139397",
         appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
         measurementId: "G-WTHNTFEX91",
@@ -71,36 +110,94 @@
         .getElementById("registroForm")
         .addEventListener("submit", function (e) {
           e.preventDefault();
-          const nombre = document.getElementById("nombre").value;
+
+          const estado = document.getElementById("estado");
+          const nombre = document.getElementById("nombre").value.trim();
           const nacimiento = document.getElementById("nacimiento").value;
-          const email = document.getElementById("email").value;
+          const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
+          const generoSeleccionado = document.querySelector(
+            'input[name="genero"]:checked'
+          );
+          if (!generoSeleccionado) {
+            estado.textContent = "Selecciona tu género.";
+            return;
+          }
+          const genero = generoSeleccionado.value;
+
+          const bio = document.getElementById("bio").value;
+
+          const interesesSeleccionados = Array.from(
+            document.querySelectorAll("#intereses input:checked")
+          ).map((el) => el.value);
+
+          if (!genero) {
+            estado.textContent = "Selecciona tu género.";
+            return;
+          }
+
+          if (password.length < 6) {
+            estado.textContent =
+              "La contraseña debe tener al menos 6 caracteres.";
+            return;
+          }
+
+          let fotoURL = "";
+          if (genero === "masculino") {
+            fotoURL = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+          } else if (genero === "femenino") {
+            fotoURL = "https://cdn-icons-png.flaticon.com/512/3135/3135789.png";
+          }
+
+          estado.textContent = "Registrando usuario...";
 
           auth
             .createUserWithEmailAndPassword(email, password)
             .then((userCred) => {
               const uid = userCred.user.uid;
               return db.collection("usuarios").doc(uid).set({
-                nombre: nombre,
-                nacimiento: nacimiento,
+                nombre,
+                nacimiento,
+                genero,
                 correo: email,
+                fotoURL,
+                bio,
+                intereses: interesesSeleccionados,
                 creado: firebase.firestore.FieldValue.serverTimestamp(),
               });
             })
             .then(() => {
-              document.getElementById("estado").textContent =
-                "Registro exitoso ✅";
+              estado.textContent = "Registro exitoso ✅";
               document.getElementById("registroForm").reset();
               setTimeout(() => {
                 window.location.href = "index.html";
-              }, 1500); // Espera 1.5 segundos antes de redirigir
+              }, 1500);
             })
-
             .catch((error) => {
-              document.getElementById("estado").textContent =
-                "Error: " + error.message;
+              estado.textContent = "Error: " + error.message;
             });
         });
+
+      document.getElementById("bio").addEventListener("input", function () {
+        const maxLength = 200;
+        const currentLength = this.value.length;
+        const remaining = maxLength - currentLength;
+
+        const contador = document.getElementById("contador");
+        contador.textContent = `${remaining} caracteres restantes`;
+
+        if (remaining <= 20) {
+          contador.style.color = "red";
+        } else {
+          contador.style.color = "#aaa";
+        }
+
+        if (remaining < 0) {
+          this.setCustomValidity("Has superado el límite de caracteres.");
+        } else {
+          this.setCustomValidity("");
+        }
+      });
     </script>
   </body>
 </html>
