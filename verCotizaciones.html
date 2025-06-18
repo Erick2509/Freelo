@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis Cotizaciones</title>
+    <link rel="stylesheet" href="/css/menu.css" />
+    <link rel="stylesheet" href="/css/verCotizaciones.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script
+      src="https://kit.fontawesome.com/daa3e12514.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="perfil-container">
+      <span id="nombreUsuario">Cargando...</span>
+      <div id="perfilUsuario">
+        <img id="fotoUsuario" src="img/default-user.png" alt="Perfil" />
+        <i class="fa-solid fa-caret-down"></i>
+        <div id="menuUsuario">
+          <button onclick="verPerfil()">👤 Ver perfil</button>
+          <button onclick="cerrarSesion()">🔓 Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="header">
+      <button onclick="window.location.href='menu.html'">
+        ← Volver al menú
+      </button>
+
+      <h1>Mis Cotizaciones</h1>
+    </div>
+
+    <div class="cotizaciones-list" id="listaCotizaciones"></div>
+
+    <!-- Modal de detalles -->
+    <div id="modalDetalles" class="modal-overlay">
+      <div class="modal-box">
+        <h2>Preguntas y Respuestas</h2>
+        <div id="contenidoModal"></div>
+        <button onclick="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="modalConfirmacion" class="modal-overlay">
+      <div class="modal-box">
+        <h2>¿Estás seguro?</h2>
+        <p>Esta acción eliminará tu cotización de forma permanente.</p>
+        <div class="modal-actions">
+          <button id="btnCancelar">Cancelar</button>
+          <button id="btnConfirmar">Sí, eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBU23xF5UGPYajryv-nSNF4kM9rVOLcE4Y",
+        authDomain: "freelo-e73e6.firebaseapp.com",
+        projectId: "freelo-e73e6",
+        storageBucket: "freelo-e73e6.appspot.com",
+        messagingSenderId: "777861139397",
+        appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
+      };
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      const spanNombre = document.getElementById("nombreUsuario");
+      const fotoUsuario = document.getElementById("fotoUsuario");
+      const perfil = document.getElementById("perfilUsuario");
+      const menu = document.getElementById("menuUsuario");
+
+      let uidUsuario = null;
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          uidUsuario = user.uid;
+          db.collection("usuarios")
+            .doc(user.uid)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                const data = doc.data();
+                spanNombre.textContent = data.nombre || "Usuario";
+                fotoUsuario.src = data.fotoURL || "img/default-user.png";
+              }
+            });
+          cargarCotizaciones();
+        } else {
+          window.location.href = "index.html";
+        }
+      });
+
+      perfil.addEventListener("click", () => {
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      });
+      document.addEventListener("click", (e) => {
+        if (!perfil.contains(e.target)) menu.style.display = "none";
+      });
+
+      function verPerfil() {
+        window.location.href = "verPerfil.html";
+      }
+
+      function cerrarSesion() {
+        firebase
+          .auth()
+          .signOut()
+          .then(() => {
+            window.location.href = "index.html";
+          });
+      }
+
+      function cargarCotizaciones() {
+        const contenedor = document.getElementById("listaCotizaciones");
+        db.collection("cotizaciones")
+          .where("uid", "==", uidUsuario)
+          .orderBy("creado", "desc")
+          .get()
+          .then((snap) => {
+            if (snap.empty) {
+              contenedor.innerHTML = "<p>No hay cotizaciones registradas.</p>";
+              return;
+            }
+            contenedor.innerHTML = "";
+            snap.forEach((doc) => {
+              const data = doc.data();
+              const respuestasTexto = data.respuestas
+                .map((r, i) => `${i + 1}. ${r}`)
+                .join("<br>");
+              const div = document.createElement("div");
+              div.className = "cotizacion-box";
+              div.innerHTML = `
+                <h3>${data.respuestas[0]}</h3>
+                <p><strong>Tarifa estimada:</strong><br> S/.${data.tarifaMin} - S/.${data.tarifaMax}</p>
+                <div class="acciones">
+                  <button onclick='verDetalles(\`${respuestasTexto}\`)'>👁 Ver más</button>
+                  <button onclick='eliminarCotizacion("${doc.id}")'>🗑 Eliminar</button>
+                </div>
+              `;
+              contenedor.appendChild(div);
+            });
+          });
+      }
+
+      let idAEliminar = null;
+
+      function eliminarCotizacion(id) {
+        idAEliminar = id;
+        document.getElementById("modalConfirmacion").style.display = "flex";
+      }
+
+      document.getElementById("btnCancelar").addEventListener("click", () => {
+        idAEliminar = null;
+        document.getElementById("modalConfirmacion").style.display = "none";
+      });
+
+      document.getElementById("btnConfirmar").addEventListener("click", () => {
+        if (idAEliminar) {
+          db.collection("cotizaciones")
+            .doc(idAEliminar)
+            .delete()
+            .then(() => {
+              idAEliminar = null;
+              document.getElementById("modalConfirmacion").style.display =
+                "none";
+              cargarCotizaciones();
+            });
+        }
+      });
+
+      function verDetalles(contenido) {
+        document.getElementById("contenidoModal").innerHTML = contenido;
+        document.getElementById("modalDetalles").style.display = "flex";
+      }
+
+      function cerrarModal() {
+        document.getElementById("modalDetalles").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

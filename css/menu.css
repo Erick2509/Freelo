@@ -91,7 +91,8 @@ th {
   animation: scaleDown 0.3s ease-in forwards;
 }
 
-.modal-content input, .modal-content select {
+.modal-content input, 
+.modal-content select {
   width: 100%;
   margin-top: 0.75rem;
   padding: 0.75rem;
@@ -100,7 +101,8 @@ th {
   font-size: 1rem;
 }
 
-.modal-content input:invalid, .modal-content select:invalid {
+.modal-content input:invalid, 
+.modal-content select:invalid {
   border-color: #ff4d4d;
 }
 
@@ -125,87 +127,56 @@ th {
   cursor: pointer;
 }
 
-/* Estilos del contenedor de perfil */
-.perfil-container {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
+/* Preguntas del formulario tipo wizard */
+.question {
+  display: none;
+  flex-direction: column;
   gap: 10px;
 }
 
-/* Estilos del icono de perfil */
-#perfilUsuario {
-  position: relative;
-  cursor: pointer;
+.question.active {
+  display: flex;
 }
 
-#iconoPerfil {
-  font-size: 1.5rem;
+.question label {
+  background: #29293a;
   color: white;
-}
-
-/* Estilos del menú desplegable */
-#menuUsuario {
-  display: none;
-  position: absolute;
-  top: 2.5rem;
-  right: 0;
-  background-color: #1f1f2e;
+  padding: 12px;
   border-radius: 6px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  padding: 0.5rem 0;
-  width: 100px;
-  animation: fadeIn 0.3s ease-in-out;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-
-  z-index: 1000;
-}
-
-#menuUsuario button {
-  display: block;
-  background: none;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  width: 100%;
-  text-align: left;
-  font-size: 1rem;
-  transition: background-color 0.3s;
   cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
 }
 
-#menuUsuario button:hover {
-  background-color: #333;
+.question label:hover {
+  background: #3a3a4a;
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from { opacity: 0; } to { opacity: 1; }
+/* Resumen final */
+#resumen {
+  text-align: left;
+  font-size: 0.9rem;
+  padding-left: 20px;
 }
 
-@keyframes scaleUp {
-  0% {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
+#resumen li {
+  margin-bottom: 8px;
 }
 
-@keyframes scaleDown {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.9);
-  }
+/* Botón de envío final */
+#enviarFormulario {
+  background-color: #c6ff3a;
+  color: black;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
 }
+
+/* Estilos del contenedor de perfil */
 .perfil-container {
   display: flex;
   justify-content: flex-end;
@@ -238,7 +209,8 @@ th {
   border-radius: 10px;
   display: none;
   flex-direction: column;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #1f1f2e;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   min-width: 150px;
 }
@@ -247,6 +219,7 @@ th {
   padding: 10px;
   background: none;
   border: none;
+  color: white;
   width: 100%;
   text-align: left;
   font-size: 14px;
@@ -254,8 +227,38 @@ th {
   transition: background 0.2s;
 }
 
+#menuUsuario button:hover {
+  background-color: #333;
+}
 
 #nombreUsuario {
   margin-right: 10px;
   font-weight: 600;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleDown {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 }

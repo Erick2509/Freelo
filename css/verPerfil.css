@@ -1,9 +1,10 @@
-*{
+/* RESET */
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-
 }
+
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,98 +13,242 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background 0.4s ease;
+}
+
+/* Modo oscuro automático según preferencia del usuario */
+@media (prefers-color-scheme: dark) {
+
+  #perfilUsuario {
+    background-color: #1e1e1e;
+  }
+
+  input.editable,
+  textarea.editable {
+    background-color: #535353;
+    color: #f0f0f0;
+  }
+
+  .chip {
+    background-color: #333;
+  }
+
+  .chip input[type="checkbox"]:checked + span {
+    background-color: #8b7eff;
+  }
+
+  .btn-volver {
+    background-color: #2b2b2b;
+    color: #8b7eff;
+    border-color: #8b7eff;
+  }
+
+  .btn-volver:hover {
+    background-color: #8b7eff;
+    color: white;
+  }
 }
 
 .perfil-container {
   max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: auto;
+  padding: 1rem;
   text-align: center;
 }
 
 #perfilUsuario {
+  background: white;
+  padding: 2rem;
+  border-radius: 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: white;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: background 0.3s ease;
 }
 
 #fotoUsuario {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 3px solid #6952EB;
   object-fit: cover;
+  border: 4px solid #6952EB;
+  box-shadow: 0 0 10px rgba(105, 82, 235, 0.4);
   margin-bottom: 1rem;
 }
 
-#nombreUsuarioPerfil {
-  font-size: 1.5rem;
+#generoUsuario {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.editable {
+  width: 100%;
+  padding: 0.6rem 1rem;
   margin: 0.5rem 0;
+  border: none;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+  font-size: 1rem;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.editable:disabled {
+  background-color: #f5f5f5;
   color: #333;
 }
 
-#generoUsuario,
-#fechaNacimiento,
-#emailUsuario,
-#aboutMe {
-  font-size: 1rem;
-  margin: 0.3rem 0;
+#emailUsuario {
+  font-size: 0.95rem;
   color: #555;
+  margin-top: 0.5rem;
 }
 
-#interesesContainer {
+#interesesContainer h3 {
   margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
-.interest {
-  display: inline-block;
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 0.5rem;
+  justify-content: center;
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  background-color: #eee;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-weight: 500;
+  transform: scale(1);
+}
+
+.chip:hover {
+  transform: scale(1.05);
+}
+
+.chip input[type="checkbox"] {
+  display: none;
+}
+
+.chip input[type="checkbox"]:checked + span {
   background-color: #6952EB;
   color: white;
-  padding: 0.4rem 1rem;
   border-radius: 20px;
-  margin: 0.3rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
 }
 
-button {
-  margin-top: 2rem;
+button, .cerrar-btn {
+  margin-top: 1rem;
   background-color: #ff4e4e;
   color: white;
   border: none;
-  padding: 0.7rem 2rem;
+  padding: 0.6rem 1.5rem;
   border-radius: 30px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.2s;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, transform 0.3s ease;
 }
 
-button:hover {
+button:hover, .cerrar-btn:hover {
   background-color: #d93434;
+  transform: scale(1.05);
 }
+
+#editarBtn {
+  background-color: #ff6b6b;
+  transition: background-color 0.2s ease, transform 0.3s ease;
+}
+
+#editarBtn:hover {
+  background-color: #e55353;
+  transform: scale(1.05) rotate(-2deg);
+}
+
+#editarBtn:active {
+  transform: scale(0.95) rotate(1deg);
+  background-color: #d84141;
+}
+
+#cancelarBtn {
+  background-color: #aaa;
+}
+
+#cancelarBtn:hover {
+  background-color: #888;
+}
+
 .btn-volver {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  color: #6952EB;
-  font-weight: bold;
-  font-size: 1rem;
-  margin: 1rem;
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: white;
-  border: 2px solid #6952EB;
+  top: 15px;
+  left: 15px;
+  background: white;
+  color: #6952EB;
   padding: 0.4rem 0.8rem;
+  border: 2px solid #6952EB;
   border-radius: 30px;
-  transition: background-color 0.2s, color 0.2s;
+  font-size: 0.9rem;
+  text-decoration: none;
+  font-weight: bold;
   z-index: 100;
+  transition: all 0.3s ease;
 }
 
 .btn-volver:hover {
   background-color: #6952EB;
   color: white;
+}
+
+.estado-msg {
+  font-size: 0.95rem;
+  margin-top: 1rem;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.estado-msg.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.estado-msg.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.error-msg {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
 }

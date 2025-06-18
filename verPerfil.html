@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perfil de Usuario</title>
     <link rel="stylesheet" href="/css/verPerfil.css" />
-    <script
-      src="https://kit.fontawesome.com/daa3e12514.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/daa3e12514.js" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -21,19 +18,33 @@
     <div class="perfil-container">
       <div id="perfilUsuario">
         <img id="fotoUsuario" src="img/default-user.png" alt="Foto de perfil" />
+
         <p id="generoUsuario">Género:</p>
-        <h2 id="nombreUsuarioPerfil">Nombre</h2>
-        <p id="fechaNacimiento">Nacimiento:</p>
-        <p id="aboutMe">Acerca de mí:</p>
+
+        <input id="nombreUsuarioPerfil" class="editable" type="text" disabled />
+
+        <input id="fechaNacimiento" class="editable" type="date" disabled />
+
+        <textarea id="aboutMe" class="editable" rows="3" disabled></textarea>
+
         <p id="emailUsuario">Correo:</p>
 
         <div id="interesesContainer">
           <h3>Intereses:</h3>
-          <div id="intereses"></div>
+          <div id="interesesChips" class="chips-container"></div>
+          <p id="errorIntereses" class="error-msg" style="display: none;">Selecciona al menos un interés.</p>
         </div>
-      </div>
 
-      <button onclick="cerrarSesion()">Cerrar sesión</button>
+        <div class="botones-accion">
+          <button id="editarBtn" onclick="habilitarEdicion()">✏️ Editar perfil</button>
+          <button id="guardarBtn" onclick="guardarCambios()" style="display: none;">💾 Guardar cambios</button>
+          <button id="cancelarBtn" onclick="cancelarCambios()" style="display: none;">❌ Cancelar</button>
+        </div>
+
+        <p id="estadoGuardado" class="estado-msg" style="display: none;"></p>
+
+        <button onclick="cerrarSesion()" class="cerrar-btn">Cerrar sesión</button>
+      </div>
     </div>
 
     <script>
@@ -51,62 +62,160 @@
       const db = firebase.firestore();
 
       const perfilImg = document.getElementById("fotoUsuario");
-      const spanNombre = document.getElementById("nombreUsuarioPerfil");
+      const inputNombre = document.getElementById("nombreUsuarioPerfil");
       const emailUsuario = document.getElementById("emailUsuario");
       const aboutMe = document.getElementById("aboutMe");
       const generoUsuario = document.getElementById("generoUsuario");
-      const fechaNacimiento = document.getElementById("fechaNacimiento");
+      const inputNacimiento = document.getElementById("fechaNacimiento");
+      const chipsContainer = document.getElementById("interesesChips");
+
+      const todosLosIntereses = ["Diseño", "Desarrollo Web", "Marketing", "Redacción",
+        "Fotografía", "Edición de video", "Traducción", "Animación", "Community manager", "Desarrollo app"
+      ];
+      let interesesCheckboxes = [];
+      let datosOriginales = {};
+      let uidUsuario = "";
 
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          const uid = user.uid;
+          uidUsuario = user.uid;
 
-          db.collection("usuarios")
-            .doc(uid)
-            .get()
-            .then((doc) => {
-              if (doc.exists) {
-                const data = doc.data();
-                const nombre = data.nombre || "Usuario";
-                const genero = data.genero || "No especificado";
-                const nacimiento = data.nacimiento || "No disponible";
-                const foto = data.fotoURL || "img/default-user.png";
-                const bio = data.bio || "No se ha agregado información.";
-                const intereses = data.intereses || [];
+          db.collection("usuarios").doc(uidUsuario).get().then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              datosOriginales = { ...data };
+              inputNombre.value = data.nombre || "";
+              inputNacimiento.value = data.nacimiento || "";
+              perfilImg.src = data.fotoURL || "img/default-user.png";
+              generoUsuario.textContent = "Género: " + (data.genero || "No especificado");
+              aboutMe.value = data.bio || "";
+              emailUsuario.textContent = "Correo: " + user.email;
 
-                // Mostrar datos
-                spanNombre.textContent = nombre;
-                perfilImg.src = foto;
-                generoUsuario.textContent = "Género: " + genero;
-                fechaNacimiento.textContent = "Nacimiento: " + nacimiento;
-                aboutMe.textContent = "Acerca de mí: " + bio;
-                emailUsuario.textContent = "Correo: " + user.email;
-
-                // Intereses
-                const interesesDiv = document.getElementById("intereses");
-                interesesDiv.innerHTML = "";
-                intereses.forEach((interes) => {
-                  const span = document.createElement("span");
-                  span.classList.add("interest");
-                  span.textContent = interes;
-                  interesesDiv.appendChild(span);
-                });
-              }
-            });
+              mostrarIntereses(data.intereses || [], false);
+            }
+          });
         } else {
           window.location.href = "index.html";
         }
       });
 
-      function cerrarSesion() {
-        localStorage.removeItem("nombreUsuario");
-        localStorage.removeItem("fotoUsuario");
-        firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            window.location.href = "index.html";
+      function mostrarIntereses(intereses = [], editable = false) {
+        chipsContainer.innerHTML = "";
+        todosLosIntereses.forEach((int) => {
+          if (!editable && !intereses.includes(int)) return;
+
+          const label = document.createElement("label");
+          label.className = "chip";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.value = int;
+          input.checked = intereses.includes(int);
+          input.disabled = !editable;
+
+          const span = document.createElement("span");
+          span.textContent = int;
+
+          label.appendChild(input);
+          label.appendChild(span);
+          chipsContainer.appendChild(label);
+        });
+        interesesCheckboxes = document.querySelectorAll("#interesesChips input[type='checkbox']");
+        interesesCheckboxes.forEach(chk => {
+          chk.addEventListener("change", () => {
+            document.getElementById("errorIntereses").style.display = "none";
           });
+        });
+      }
+
+      function habilitarEdicion() {
+        document.querySelectorAll(".editable").forEach(el => el.disabled = false);
+        mostrarIntereses(datosOriginales.intereses || [], true);
+        document.getElementById("guardarBtn").style.display = "inline-block";
+        document.getElementById("cancelarBtn").style.display = "inline-block";
+        document.getElementById("editarBtn").style.display = "none";
+      }
+
+      function cancelarCambios() {
+        inputNombre.value = datosOriginales.nombre || "";
+        inputNacimiento.value = datosOriginales.nacimiento || "";
+        aboutMe.value = datosOriginales.bio || "";
+        mostrarIntereses(datosOriginales.intereses || [], false);
+        document.querySelectorAll(".editable").forEach(el => el.disabled = true);
+        document.getElementById("guardarBtn").style.display = "none";
+        document.getElementById("cancelarBtn").style.display = "none";
+        document.getElementById("editarBtn").style.display = "inline-block";
+      }
+
+      function guardarCambios() {
+        const nuevoNombre = inputNombre.value.trim();
+        const nuevaBio = aboutMe.value.trim();
+        const nuevaFecha = inputNacimiento.value;
+        const errorIntereses = document.getElementById("errorIntereses");
+        const estadoGuardado = document.getElementById("estadoGuardado");
+
+        const interesesSeleccionados = Array.from(interesesCheckboxes)
+          .filter(chk => chk.checked)
+          .map(chk => chk.value);
+
+        if (!nuevoNombre || !nuevaFecha) {
+          estadoGuardado.textContent = "Completa todos los campos obligatorios.";
+          estadoGuardado.className = "estado-msg error";
+          estadoGuardado.style.display = "block";
+          return;
+        }
+
+        if (interesesSeleccionados.length === 0) {
+          errorIntereses.style.display = "block";
+          return;
+        } else {
+          errorIntereses.style.display = "none";
+        }
+
+        db.collection("usuarios").doc(uidUsuario).update({
+          nombre: nuevoNombre,
+          bio: nuevaBio,
+          nacimiento: nuevaFecha,
+          intereses: interesesSeleccionados
+        }).then(() => {
+          estadoGuardado.textContent = "Perfil actualizado correctamente.";
+          estadoGuardado.className = "estado-msg success";
+          estadoGuardado.style.display = "block";
+          estadoGuardado.style.animation = "fadeIn 0.5s ease";
+
+          setTimeout(() => {
+            estadoGuardado.style.animation = "fadeOut 0.5s ease";
+            setTimeout(() => {
+              estadoGuardado.style.display = "none";
+            }, 500);
+          }, 3000);
+
+          datosOriginales.nombre = nuevoNombre;
+          datosOriginales.nacimiento = nuevaFecha;
+          datosOriginales.bio = nuevaBio;
+          datosOriginales.intereses = interesesSeleccionados;
+
+          cancelarCambios();
+        }).catch(err => {
+          estadoGuardado.textContent = "Error al guardar: " + err.message;
+          estadoGuardado.className = "estado-msg error";
+          estadoGuardado.style.display = "block";
+          estadoGuardado.style.animation = "fadeIn 0.5s ease";
+
+          setTimeout(() => {
+            estadoGuardado.style.animation = "fadeOut 0.5s ease";
+            setTimeout(() => {
+              estadoGuardado.style.display = "none";
+            }, 500);
+          }, 3000);
+        });
+      }
+
+      function cerrarSesion() {
+        localStorage.clear();
+        firebase.auth().signOut().then(() => {
+          window.location.href = "index.html";
+        });
       }
     </script>
   </body>
