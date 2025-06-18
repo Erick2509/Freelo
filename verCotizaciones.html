@@ -9,39 +9,43 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    <script
-      src="https://kit.fontawesome.com/daa3e12514.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/daa3e12514.js" crossorigin="anonymous"></script>
   </head>
   <body>
-    <div class="perfil-container">
-      <span id="nombreUsuario">Cargando...</span>
-      <div id="perfilUsuario">
-        <img id="fotoUsuario" src="img/default-user.png" alt="Perfil" />
-        <i class="fa-solid fa-caret-down"></i>
-        <div id="menuUsuario">
-          <button onclick="verPerfil()">👤 Ver perfil</button>
-          <button onclick="cerrarSesion()">🔓 Cerrar sesión</button>
+    <!-- ✅ Cabecera estructurada -->
+    <div class="header">
+      <div class="zona-izquierda">
+        <button onclick="window.location.href='menu.html'">← Volver al menú</button>
+      </div>
+      <div class="zona-derecha perfil-container">
+        <span id="nombreUsuario">Cargando...</span>
+        <div id="perfilUsuario">
+          <img id="fotoUsuario" src="img/default-user.png" alt="Perfil" />
+          <i class="fa-solid fa-caret-down"></i>
+          <div id="menuUsuario">
+            <button onclick="verPerfil()">👤 Ver perfil</button>
+            <button onclick="cerrarSesion()">🔓 Cerrar sesión</button>
+          </div>
         </div>
       </div>
     </div>
+    <h1 class="titulo-centro">Mis Cotizaciones</h1>
 
-    <div class="header">
-      <button onclick="window.location.href='menu.html'">
-        ← Volver al menú
-      </button>
-
-      <h1>Mis Cotizaciones</h1>
-    </div>
-
+    <!-- Lista de cotizaciones -->
     <div class="cotizaciones-list" id="listaCotizaciones"></div>
 
     <!-- Modal de detalles -->
     <div id="modalDetalles" class="modal-overlay">
       <div class="modal-box">
-        <h2>Preguntas y Respuestas</h2>
-        <div id="contenidoModal"></div>
+        <h2>Cuestionario</h2>
+        <div id="contenidoModal">
+          <table class="tabla-detalles">
+            <thead>
+              <tr><th>Pregunta</th><th>Respuesta</th></tr>
+            </thead>
+            <tbody id="tablaRespuestas"></tbody>
+          </table>
+        </div>
         <button onclick="cerrarModal()">Cerrar</button>
       </div>
     </div>
@@ -67,6 +71,7 @@
         messagingSenderId: "777861139397",
         appId: "1:777861139397:web:08d96bfcfe580f02cf19ac",
       };
+
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
 
@@ -74,6 +79,23 @@
       const fotoUsuario = document.getElementById("fotoUsuario");
       const perfil = document.getElementById("perfilUsuario");
       const menu = document.getElementById("menuUsuario");
+      const preguntas = [
+        "¿Qué tipo de servicio necesitas?",
+        "¿CUÁNTOS AÑOS DE EXPERIENCIA?",
+        "¿Qué tipo de entregables realizas?",
+        "¿Cuántas revisiones serán?",
+        "¿El presupuesto será cubierto por tus medios o por una empresa?",
+        "¿Cuál es el presupuesto aproximado en soles (PEN)?",
+        "¿Cuál es la urgencia del proyecto?",
+        "¿El trabajo requiere conocimientos técnicos específicos?",
+        "¿Qué tipo de frecuencia tendrá?",
+        "¿El trabajo incluye interacción directa con clientes o usuarios?",
+        "¿Es necesario usar herramientas específicas?",
+        "¿Se requiere que se firme un acuerdo de confidencialidad (NDA)?",
+        "¿Qué idioma debe manejar el freelancer?",
+        "¿Cuál es el formato de trabajo preferido?",
+        "¿Deseas contratar a una persona o a un equipo?"
+      ];
 
       let uidUsuario = null;
 
@@ -99,6 +121,7 @@
       perfil.addEventListener("click", () => {
         menu.style.display = menu.style.display === "block" ? "none" : "block";
       });
+
       document.addEventListener("click", (e) => {
         if (!perfil.contains(e.target)) menu.style.display = "none";
       });
@@ -108,12 +131,9 @@
       }
 
       function cerrarSesion() {
-        firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            window.location.href = "index.html";
-          });
+        firebase.auth().signOut().then(() => {
+          window.location.href = "index.html";
+        });
       }
 
       function cargarCotizaciones() {
@@ -130,16 +150,13 @@
             contenedor.innerHTML = "";
             snap.forEach((doc) => {
               const data = doc.data();
-              const respuestasTexto = data.respuestas
-                .map((r, i) => `${i + 1}. ${r}`)
-                .join("<br>");
               const div = document.createElement("div");
               div.className = "cotizacion-box";
               div.innerHTML = `
                 <h3>${data.respuestas[0]}</h3>
                 <p><strong>Tarifa estimada:</strong><br> S/.${data.tarifaMin} - S/.${data.tarifaMax}</p>
                 <div class="acciones">
-                  <button onclick='verDetalles(\`${respuestasTexto}\`)'>👁 Ver más</button>
+                  <button onclick='verDetalles(${JSON.stringify(data.respuestas)})'>👁 Ver más</button>
                   <button onclick='eliminarCotizacion("${doc.id}")'>🗑 Eliminar</button>
                 </div>
               `;
@@ -167,15 +184,25 @@
             .delete()
             .then(() => {
               idAEliminar = null;
-              document.getElementById("modalConfirmacion").style.display =
-                "none";
+              document.getElementById("modalConfirmacion").style.display = "none";
               cargarCotizaciones();
             });
         }
       });
 
-      function verDetalles(contenido) {
-        document.getElementById("contenidoModal").innerHTML = contenido;
+      function verDetalles(respuestas) {
+        const tbody = document.getElementById("tablaRespuestas");
+        tbody.innerHTML = "";
+        respuestas.forEach((resp, idx) => {
+          const tr = document.createElement("tr");
+          const td1 = document.createElement("td");
+          td1.textContent = preguntas[idx] || `Pregunta ${idx + 1}`;
+          const td2 = document.createElement("td");
+          td2.textContent = resp;
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tbody.appendChild(tr);
+        });
         document.getElementById("modalDetalles").style.display = "flex";
       }
 

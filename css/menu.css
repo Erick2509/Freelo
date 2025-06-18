@@ -262,3 +262,44 @@ th {
     transform: scale(0.9);
   }
 }
+
+.resumen-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+  text-align: left;
+  scrollbar-width: thin; /* Firefox */
+}
+
+.resumen-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.resumen-scroll::-webkit-scrollbar-thumb {
+  background-color: #7a5cfa;
+  border-radius: 4px;
+}
+
+.resumen-scroll ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.resumen-scroll li {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2a2a3b;
+  line-height: 1.5;
+}
+
+.resumen-scroll li strong {
+  display: block;
+  color: #c6ff3a;
+  margin-bottom: 4px;
+}
+
+
+
+
+
