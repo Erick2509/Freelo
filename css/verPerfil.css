@@ -252,3 +252,34 @@ button:hover, .cerrar-btn:hover {
   text-align: center;
   transition: all 0.3s ease;
 }
+
+.avatars-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.avatar-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatar-option input {
+  display: none;
+}
+
+.avatar-option img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+
+.avatar-option input:checked + img {
+  border: 2px solid #007bff;
+}

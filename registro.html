@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Freelo - Registro</title>
     <link rel="stylesheet" href="/css/registro.css" />
-    <script
-      src="https://kit.fontawesome.com/daa3e12514.js"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://kit.fontawesome.com/daa3e12514.js" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -18,12 +15,7 @@
       <div class="header-login">Regístrate</div>
       <form id="registroForm">
         <input type="text" id="nombre" placeholder="Nombre completo" required />
-        <input
-          type="date"
-          id="nacimiento"
-          placeholder="Fecha de nacimiento"
-          required
-        />
+        <input type="date" id="nacimiento" required />
 
         <label>Selecciona tu género:</label>
         <div class="chips-container" id="genero">
@@ -37,76 +29,77 @@
           </label>
         </div>
 
-        <input
-          type="email"
-          id="email"
-          placeholder="Correo electrónico"
-          required
-        />
-        <input
-          type="password"
-          id="password"
-          placeholder="Contraseña"
-          required
-          minlength="6"
-        />
+        <label>Elige tu avatar:</label>
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <img
+            id="previewAvatar"
+            src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+            alt="Vista previa"
+            style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #ccc;"
+          />
+        </div>
 
-        <textarea
-          id="bio"
-          placeholder="Acerca de mí (máx. 200 caracteres)"
-          maxlength="200"
-          rows="4"
-          style="
-            width: 100%;
-            padding: 1rem;
-            margin-top: 1rem;
-            border-radius: 8px;
-          "
-        ></textarea>
+        <div class="avatars-container" id="seleccionAvatar">
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" required />
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Avatar 1" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" alt="Avatar 2" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/147/147144.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" alt="Avatar 3" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" alt="Avatar 4" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922656.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922656.png" alt="Avatar 5" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" alt="Avatar 6" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922688.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922688.png" alt="Avatar 7" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922596.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922596.png" alt="Avatar 8" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922572.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922572.png" alt="Avatar 9" />
+          </label>
+          <label class="avatar-option">
+            <input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922622.png" />
+            <img src="https://cdn-icons-png.flaticon.com/512/2922/2922622.png" alt="Avatar 10" />
+          </label>
+        </div>
+
+        <input type="email" id="email" placeholder="Correo electrónico" required />
+        <input type="password" id="password" placeholder="Contraseña" required minlength="6" />
+
+        <textarea id="bio" placeholder="Acerca de mí (máx. 200 caracteres)" maxlength="200" rows="4"></textarea>
         <p id="contador" style="color: #aaa">200 caracteres restantes</p>
 
         <label for="intereses">Selecciona tus intereses:</label>
         <div class="chips-container" id="intereses">
-          <label class="chip">
-            <input type="checkbox" value="Diseño" />
-            <span>Diseño</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Desarrollo" />
-            <span>Desarrollo Web</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Marketing" />
-            <span>Marketing</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Redacción</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Fotografía</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Edición de video</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Traducción</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Animación</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Community manager</span>
-          </label>
-          <label class="chip">
-            <input type="checkbox" value="Redacción" />
-            <span>Desarrollo app</span>
-          </label>
+          <label class="chip"><input type="checkbox" value="Diseño" /><span>Diseño</span></label>
+          <label class="chip"><input type="checkbox" value="Desarrollo" /><span>Desarrollo Web</span></label>
+          <label class="chip"><input type="checkbox" value="Marketing" /><span>Marketing</span></label>
+          <label class="chip"><input type="checkbox" value="Redacción" /><span>Redacción</span></label>
+          <label class="chip"><input type="checkbox" value="Fotografía" /><span>Fotografía</span></label>
+          <label class="chip"><input type="checkbox" value="Video" /><span>Edición de video</span></label>
+          <label class="chip"><input type="checkbox" value="Traducción" /><span>Traducción</span></label>
+          <label class="chip"><input type="checkbox" value="Animación" /><span>Animación</span></label>
+          <label class="chip"><input type="checkbox" value="Community" /><span>Community manager</span></label>
+          <label class="chip"><input type="checkbox" value="App" /><span>Desarrollo app</span></label>
         </div>
 
         <button type="submit">Continuar</button>
@@ -130,97 +123,79 @@
       const auth = firebase.auth();
       const db = firebase.firestore();
 
-      document
-        .getElementById("registroForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          const estado = document.getElementById("estado");
-          const nombre = document.getElementById("nombre").value.trim();
-          const nacimiento = document.getElementById("nacimiento").value;
-          const email = document.getElementById("email").value.trim();
-          const password = document.getElementById("password").value;
-          const generoSeleccionado = document.querySelector(
-            'input[name="genero"]:checked'
-          );
-          if (!generoSeleccionado) {
-            estado.textContent = "Selecciona tu género.";
-            return;
-          }
-          const genero = generoSeleccionado.value;
-
-          const bio = document.getElementById("bio").value;
-
-          const interesesSeleccionados = Array.from(
-            document.querySelectorAll("#intereses input:checked")
-          ).map((el) => el.value);
-
-          if (!genero) {
-            estado.textContent = "Selecciona tu género.";
-            return;
-          }
-
-          if (password.length < 6) {
-            estado.textContent =
-              "La contraseña debe tener al menos 6 caracteres.";
-            return;
-          }
-
-          let fotoURL = "";
-          if (genero === "masculino") {
-            fotoURL = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-          } else if (genero === "femenino") {
-            fotoURL = "https://cdn-icons-png.flaticon.com/512/3135/3135789.png";
-          }
-
-          estado.textContent = "Registrando usuario...";
-
-          auth
-            .createUserWithEmailAndPassword(email, password)
-            .then((userCred) => {
-              const uid = userCred.user.uid;
-              return db.collection("usuarios").doc(uid).set({
-                nombre,
-                nacimiento,
-                genero,
-                correo: email,
-                fotoURL,
-                bio,
-                intereses: interesesSeleccionados,
-                creado: firebase.firestore.FieldValue.serverTimestamp(),
-              });
-            })
-            .then(() => {
-              estado.textContent = "Registro exitoso ✅";
-              document.getElementById("registroForm").reset();
-              setTimeout(() => {
-                window.location.href = "index.html";
-              }, 1500);
-            })
-            .catch((error) => {
-              estado.textContent = "Error: " + error.message;
-            });
+      // Vista previa de avatar
+      document.querySelectorAll('input[name="avatar"]').forEach((input) => {
+        input.addEventListener("change", function () {
+          document.getElementById("previewAvatar").src = this.value;
         });
+      });
+
+      document.getElementById("registroForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const estado = document.getElementById("estado");
+
+        const nombre = document.getElementById("nombre").value.trim();
+        const nacimiento = document.getElementById("nacimiento").value;
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const generoSeleccionado = document.querySelector('input[name="genero"]:checked');
+        let avatarSeleccionado = document.querySelector('input[name="avatar"]:checked');
+        const bio = document.getElementById("bio").value;
+
+        if (!generoSeleccionado) {
+          estado.textContent = "Selecciona tu género.";
+          return;
+        }
+
+        if (!avatarSeleccionado) {
+          avatarSeleccionado = document.querySelector('input[name="avatar"]');
+          avatarSeleccionado.checked = true;
+          document.getElementById("previewAvatar").src = avatarSeleccionado.value;
+        }
+
+        const genero = generoSeleccionado.value;
+        const fotoURL = avatarSeleccionado.value;
+
+        const interesesSeleccionados = Array.from(
+          document.querySelectorAll("#intereses input:checked")
+        ).map((el) => el.value);
+
+        estado.textContent = "Registrando usuario...";
+
+        auth.createUserWithEmailAndPassword(email, password)
+          .then((userCred) => {
+            const uid = userCred.user.uid;
+            return db.collection("usuarios").doc(uid).set({
+              nombre,
+              nacimiento,
+              genero,
+              correo: email,
+              fotoURL,
+              bio,
+              intereses: interesesSeleccionados,
+              creado: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+          })
+          .then(() => {
+            estado.textContent = "Registro exitoso ✅";
+            document.getElementById("registroForm").reset();
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1500);
+          })
+          .catch((error) => {
+            estado.textContent = "Error: " + error.message;
+          });
+      });
 
       document.getElementById("bio").addEventListener("input", function () {
         const maxLength = 200;
         const currentLength = this.value.length;
         const remaining = maxLength - currentLength;
-
         const contador = document.getElementById("contador");
         contador.textContent = `${remaining} caracteres restantes`;
-
-        if (remaining <= 20) {
-          contador.style.color = "red";
-        } else {
-          contador.style.color = "#aaa";
-        }
-
-        if (remaining < 0) {
-          this.setCustomValidity("Has superado el límite de caracteres.");
-        } else {
-          this.setCustomValidity("");
-        }
+        contador.style.color = remaining <= 20 ? "red" : "#aaa";
+        this.setCustomValidity(remaining < 0 ? "Has superado el límite de caracteres." : "");
       });
     </script>
   </body>

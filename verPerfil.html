@@ -19,14 +19,23 @@
       <div id="perfilUsuario">
         <img id="fotoUsuario" src="img/default-user.png" alt="Foto de perfil" />
 
+        <div id="editarAvatares" class="avatars-container" style="display: none; margin-top: 1rem;">
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" /><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" /><img src="https://cdn-icons-png.flaticon.com/512/3135/3135789.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/147/147144.png" /><img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922656.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922656.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922561.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922688.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922688.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922596.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922596.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922572.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922572.png" /></label>
+          <label class="avatar-option"><input type="radio" name="avatar" value="https://cdn-icons-png.flaticon.com/512/2922/2922622.png" /><img src="https://cdn-icons-png.flaticon.com/512/2922/2922622.png" /></label>
+        </div>
+
         <p id="generoUsuario">Género:</p>
-
         <input id="nombreUsuarioPerfil" class="editable" type="text" disabled />
-
         <input id="fechaNacimiento" class="editable" type="date" disabled />
-
         <textarea id="aboutMe" class="editable" rows="3" disabled></textarea>
-
         <p id="emailUsuario">Correo:</p>
 
         <div id="interesesContainer">
@@ -42,7 +51,6 @@
         </div>
 
         <p id="estadoGuardado" class="estado-msg" style="display: none;"></p>
-
         <button onclick="cerrarSesion()" class="cerrar-btn">Cerrar sesión</button>
       </div>
     </div>
@@ -79,7 +87,6 @@
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           uidUsuario = user.uid;
-
           db.collection("usuarios").doc(uidUsuario).get().then((doc) => {
             if (doc.exists) {
               const data = doc.data();
@@ -90,8 +97,11 @@
               generoUsuario.textContent = "Género: " + (data.genero || "No especificado");
               aboutMe.value = data.bio || "";
               emailUsuario.textContent = "Correo: " + user.email;
-
               mostrarIntereses(data.intereses || [], false);
+
+              document.querySelectorAll('input[name="avatar"]').forEach(input => {
+                if (input.value === data.fotoURL) input.checked = true;
+              });
             }
           });
         } else {
@@ -131,6 +141,7 @@
       function habilitarEdicion() {
         document.querySelectorAll(".editable").forEach(el => el.disabled = false);
         mostrarIntereses(datosOriginales.intereses || [], true);
+        document.getElementById("editarAvatares").style.display = "flex";
         document.getElementById("guardarBtn").style.display = "inline-block";
         document.getElementById("cancelarBtn").style.display = "inline-block";
         document.getElementById("editarBtn").style.display = "none";
@@ -140,8 +151,13 @@
         inputNombre.value = datosOriginales.nombre || "";
         inputNacimiento.value = datosOriginales.nacimiento || "";
         aboutMe.value = datosOriginales.bio || "";
+        perfilImg.src = datosOriginales.fotoURL || "img/default-user.png";
+        document.querySelectorAll('input[name="avatar"]').forEach(input => {
+          input.checked = input.value === datosOriginales.fotoURL;
+        });
         mostrarIntereses(datosOriginales.intereses || [], false);
         document.querySelectorAll(".editable").forEach(el => el.disabled = true);
+        document.getElementById("editarAvatares").style.display = "none";
         document.getElementById("guardarBtn").style.display = "none";
         document.getElementById("cancelarBtn").style.display = "none";
         document.getElementById("editarBtn").style.display = "inline-block";
@@ -153,10 +169,9 @@
         const nuevaFecha = inputNacimiento.value;
         const errorIntereses = document.getElementById("errorIntereses");
         const estadoGuardado = document.getElementById("estadoGuardado");
-
-        const interesesSeleccionados = Array.from(interesesCheckboxes)
-          .filter(chk => chk.checked)
-          .map(chk => chk.value);
+        const interesesSeleccionados = Array.from(interesesCheckboxes).filter(chk => chk.checked).map(chk => chk.value);
+        const avatarSeleccionado = document.querySelector('input[name="avatar"]:checked');
+        const nuevaFotoURL = avatarSeleccionado ? avatarSeleccionado.value : datosOriginales.fotoURL;
 
         if (!nuevoNombre || !nuevaFecha) {
           estadoGuardado.textContent = "Completa todos los campos obligatorios.";
@@ -176,37 +191,33 @@
           nombre: nuevoNombre,
           bio: nuevaBio,
           nacimiento: nuevaFecha,
-          intereses: interesesSeleccionados
+          intereses: interesesSeleccionados,
+          fotoURL: nuevaFotoURL
         }).then(() => {
+          perfilImg.src = nuevaFotoURL;
           estadoGuardado.textContent = "Perfil actualizado correctamente.";
           estadoGuardado.className = "estado-msg success";
           estadoGuardado.style.display = "block";
-          estadoGuardado.style.animation = "fadeIn 0.5s ease";
-
           setTimeout(() => {
-            estadoGuardado.style.animation = "fadeOut 0.5s ease";
-            setTimeout(() => {
-              estadoGuardado.style.display = "none";
-            }, 500);
+            estadoGuardado.style.display = "none";
           }, 3000);
 
-          datosOriginales.nombre = nuevoNombre;
-          datosOriginales.nacimiento = nuevaFecha;
-          datosOriginales.bio = nuevaBio;
-          datosOriginales.intereses = interesesSeleccionados;
+          datosOriginales = {
+            ...datosOriginales,
+            nombre: nuevoNombre,
+            nacimiento: nuevaFecha,
+            bio: nuevaBio,
+            intereses: interesesSeleccionados,
+            fotoURL: nuevaFotoURL
+          };
 
           cancelarCambios();
         }).catch(err => {
           estadoGuardado.textContent = "Error al guardar: " + err.message;
           estadoGuardado.className = "estado-msg error";
           estadoGuardado.style.display = "block";
-          estadoGuardado.style.animation = "fadeIn 0.5s ease";
-
           setTimeout(() => {
-            estadoGuardado.style.animation = "fadeOut 0.5s ease";
-            setTimeout(() => {
-              estadoGuardado.style.display = "none";
-            }, 500);
+            estadoGuardado.style.display = "none";
           }, 3000);
         });
       }
